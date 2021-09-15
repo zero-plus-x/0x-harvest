@@ -16,9 +16,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     if (!isLoading && !isLoggedIn && !publicRoutes.includes(router.pathname)) {
       router.push("/login");
-    } else if (isLoggedIn && publicRoutes.includes(router.pathname)) {
-      router.push("/");
     }
+    // else if (isLoggedIn && publicRoutes.includes(router.pathname)) {
+    //   router.push("/");
+    // }
   }, [router, isLoggedIn, isLoading]);
   return (
     <>
