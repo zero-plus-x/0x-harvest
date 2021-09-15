@@ -17,7 +17,7 @@ export async function getServerSideProps(context: NextPageContext) {
   };
 }
 
-const OAuth2: NextPage = (props: {
+const Login: NextPage = (props: {
   isLoggedIn?: boolean;
   children?: ReactNode;
 }) => {
@@ -33,9 +33,9 @@ const OAuth2: NextPage = (props: {
 
   return (
     <CommonLayout>
-      <Spin />{" "}
+      <Spin />
     </CommonLayout>
   );
 };
 
-export default OAuth2;
+export default Login;

@@ -32,7 +32,7 @@ export default async function handler(
       setCookie({ res }, "HARVEST_ACCESS_TOKEN", query.access_token, config);
       setCookie({ res }, "HARVEST_ACCOUNT_ID", hyperOneAccount.id + "", config);
 
-      return res.redirect("/oauth2");
+      return res.redirect("/");
     }
   }
 

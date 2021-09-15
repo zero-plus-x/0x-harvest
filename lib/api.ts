@@ -106,3 +106,12 @@ export const createTimeEntry = (
 export const deleteTimeEntry = (entryId: number) => {
   return axios.delete(`${HARVEST_API_URL}/time_entries/${entryId}`);
 };
+
+export const useIsLoggedIn = () => {
+  const { data, error } = useSWR(`/api/harvest/company`);
+  return {
+    isLoggedIn: !!data?.is_active,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};

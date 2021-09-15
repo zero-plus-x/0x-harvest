@@ -61,7 +61,6 @@ const TimeEntries = () => {
   const setEntries = (
     fn: (newEntries: TimeEntry[] | undefined) => TimeEntry[] | undefined
   ) => {
-    console.log("ggg", fn);
     mutate(cacheKey, fn, false);
   };
 
@@ -336,10 +335,9 @@ const TimeEntryRow = ({
             danger
             icon={<DeleteOutlined />}
             onClick={async () => {
-              setEntries((entries) => {
-                console.log("editing eee", entries);
-                return entries?.filter((e) => e.id !== entry.id);
-              });
+              setEntries((entries) =>
+                entries?.filter((e) => e.id !== entry.id)
+              );
               const response = await deleteTimeEntry(entry.id);
               if (response.status === 200) {
                 message.success("Entry deleted!");

@@ -2,23 +2,10 @@ import React from "react";
 import { Menu, Layout } from "antd";
 import Link from "next/link";
 import Image from "next/image";
-import useSWR from "swr";
-
-// @ts-ignore
-const fetcher = (...args: any) => fetch(...args).then((res) => res.json());
-
-function useUser() {
-  const { data, error } = useSWR(`/api/harvest/time_entries`, fetcher);
-
-  return {
-    user: data,
-    isLoading: !error && !data,
-    isError: error,
-  };
-}
+import { useIsLoggedIn } from "../../lib/api";
 
 export default function Header() {
-  const x = useUser();
+  const { isLoggedIn, isLoading } = useIsLoggedIn();
 
   return (
     <Layout.Header>
@@ -42,7 +29,11 @@ export default function Header() {
         <Menu.Item key="settings">
           <Link href="/settings">Settings</Link>
         </Menu.Item>
-        <Menu.Item key="settings">{x.user ? "Logged in" : "Log in"}</Menu.Item>
+        {!isLoading && (
+          <Menu.Item key="login">
+            {isLoggedIn ? "Logged in" : "Log in"}
+          </Menu.Item>
+        )}
       </Menu>
     </Layout.Header>
   );
