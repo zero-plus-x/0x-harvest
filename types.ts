@@ -16,3 +16,22 @@ export type Task = {
   name: string;
   is_active: boolean;
 };
+
+export type User = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  avatar_url: string;
+};
+
+export type Account = {
+  id: number;
+  name: string;
+};
+
+export type Company = {
+  id: number;
+  name: string;
+  full_domain: string;
+};

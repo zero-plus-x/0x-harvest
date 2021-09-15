@@ -1,11 +1,11 @@
 import React from "react";
-import { Menu, Layout } from "antd";
+import { Menu, Layout, Avatar, Image as AntdImage } from "antd";
 import Link from "next/link";
 import Image from "next/image";
-import { useIsLoggedIn } from "../../lib/api";
+import { useUser } from "../../lib/api";
 
 export default function Header() {
-  const { isLoggedIn, isLoading } = useIsLoggedIn();
+  const { data, isLoading } = useUser();
 
   return (
     <Layout.Header>
@@ -31,7 +31,17 @@ export default function Header() {
         </Menu.Item>
         {!isLoading && (
           <Menu.Item key="login">
-            {isLoggedIn ? "Logged in" : "Log in"}
+            {data ? (
+              <>
+                <Avatar
+                  shape="square"
+                  src={<AntdImage src={data.avatar_url} alt="avatar" />}
+                />{" "}
+                {data.email}
+              </>
+            ) : (
+              "Log in"
+            )}
           </Menu.Item>
         )}
       </Menu>

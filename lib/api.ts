@@ -1,7 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 import useSWR from "swr";
-import { TimeEntry } from "../types";
+import { TimeEntry, User } from "../types";
 
 const HARVEST_API_URL = "/api/harvest";
 
@@ -52,8 +52,8 @@ export const specialTasks: Record<string, SpecialTask> = {
   sickDay: {
     harvestTaskId: 6646904,
     harvestProjectId: 11820549,
-    displayName: "Sick day 🤢",
-    emoji: "📚",
+    displayName: "Sick day",
+    emoji: "🤢",
     noteRequired: false,
   },
 };
@@ -107,11 +107,21 @@ export const deleteTimeEntry = (entryId: number) => {
   return axios.delete(`${HARVEST_API_URL}/time_entries/${entryId}`);
 };
 
-export const useIsLoggedIn = () => {
-  const { data, error } = useSWR(`/api/harvest/company`);
+export const useUser = () => {
+  const { data, error } = useSWR<User>(`/api/harvest/users/me`);
   return {
-    isLoggedIn: !!data?.is_active,
+    data,
     isLoading: !error && !data,
     isError: error,
+  };
+};
+
+export const useIsLoggedIn = () => {
+  const { data, isLoading, isError } = useUser();
+
+  return {
+    isLoggedIn: !!data?.id,
+    isLoading,
+    isError,
   };
 };

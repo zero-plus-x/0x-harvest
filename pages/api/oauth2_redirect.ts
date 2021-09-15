@@ -1,5 +1,12 @@
+import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { setCookie } from "nookies";
+import {
+  HARVEST_API_BASE_URL,
+  HARVEST_ID_API_BASE_URL,
+  HYPERONE_HARVEST_DOMAIN,
+} from "../../lib/harvestConfig";
+import { Account, Company } from "../../types";
 
 export default async function handler(
   req: NextApiRequest,
@@ -7,32 +14,44 @@ export default async function handler(
 ) {
   const query = req.query;
   if (query.access_token) {
-    const accountResponse = await fetch(
-      "https://id.getharvest.com/api/v2/accounts",
+    const baseHeaders = {
+      Authorization: `Bearer ${query.access_token}`,
+      "User-Agent": "0x tool (jakub@0x.se)",
+    };
+    const accounts = await axios.get<{ accounts: Account[] }>(
+      `${HARVEST_ID_API_BASE_URL}/accounts`,
       {
-        headers: {
-          Authorization: `Bearer ${query.access_token}`,
-          "User-Agent": "0x tool (jakub@0x.se)",
-        },
+        headers: baseHeaders,
       }
     );
-    const accounts: { accounts: { id: number; name: string }[] } =
-      await accountResponse.json();
-    const hyperOneAccount = accounts.accounts.find(
-      (a) => a.name === "Hyper One"
-    );
-    if (hyperOneAccount && typeof query.access_token === "string") {
-      const config = {
-        maxAge: query.expires_in,
-        path: "/",
-        httpOnly: true,
-        // sameSite: true,
-        // secure: true,
-      };
-      setCookie({ res }, "HARVEST_ACCESS_TOKEN", query.access_token, config);
-      setCookie({ res }, "HARVEST_ACCOUNT_ID", hyperOneAccount.id + "", config);
+    // we verify whether this account belongs to Hyper One later
+    // TODO: Do some people have more than one account?
+    const account = accounts.data.accounts[0];
 
-      return res.redirect("/");
+    if (account && typeof query.access_token === "string") {
+      const company = await axios.get<Company>(
+        `${HARVEST_API_BASE_URL}/company`,
+        {
+          headers: {
+            ...baseHeaders,
+            "Harvest-Account-Id": account.id + "",
+          },
+        }
+      );
+      // there is no ID to match by but the full domain is unique
+      if (company.data.full_domain === HYPERONE_HARVEST_DOMAIN) {
+        const config = {
+          maxAge: query.expires_in,
+          path: "/",
+          httpOnly: true,
+          // sameSite: true,
+          // secure: true,
+        };
+        setCookie({ res }, "HARVEST_ACCESS_TOKEN", query.access_token, config);
+        setCookie({ res }, "HARVEST_ACCOUNT_ID", account.id + "", config);
+
+        return res.redirect("/");
+      }
     }
   }
 

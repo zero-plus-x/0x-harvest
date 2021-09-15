@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nookies from "nookies";
 import httpProxy from "http-proxy";
+import { HARVEST_API_BASE_URL } from "../../../lib/harvestConfig";
 
-const API_URL = "https://api.harvestapp.com/v2";
 const proxy = httpProxy.createProxyServer();
 
 export const config = {
@@ -23,11 +23,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       return res.status(401).end();
     }
     req.headers["User-Agent"] = "0x tool (jakub@0x.se)";
-
     proxy.once("error", reject);
     // Forward the request to the API
     proxy.web(req, res, {
-      target: API_URL,
+      target: HARVEST_API_BASE_URL,
       // Don't autoRewrite because we manually rewrite the URL in the route handler.
       autoRewrite: false,
       changeOrigin: true,
