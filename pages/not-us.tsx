@@ -7,7 +7,7 @@ const Settings: NextPage = () => {
     <CommonLayout>
       <Result
         status="403"
-        title="Join us!"
+        title="No time logging for you"
         subTitle="Sorry, this app is only meant to be used by Hyper One employees."
       />
     </CommonLayout>

@@ -127,7 +127,9 @@ const VacationsDays = ({
       {vacationEntries ? (
         <>
           {vacationEntries.map((entry) => (
-            <div key={entry.id}>{entry.spent_date}</div>
+            <div key={entry.id}>
+              {entry.spent_date} {entry.notes ? ` - ${entry.notes}` : ""}
+            </div>
           ))}
         </>
       ) : (

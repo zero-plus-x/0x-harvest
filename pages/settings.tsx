@@ -4,7 +4,7 @@ import CommonLayout from "../components/layout/CommonLayout";
 export const vacationAllowancePerYear: Record<number, number | undefined> = {
   2020: 10,
   2021: 30,
-  2022: 34,
+  2022: 35,
 };
 
 const Settings: NextPage = () => {

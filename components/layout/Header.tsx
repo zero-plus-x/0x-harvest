@@ -2,7 +2,7 @@ import React from "react";
 import { Menu, Layout, Avatar, Image as AntdImage } from "antd";
 import Link from "next/link";
 import Image from "next/image";
-import { useUser } from "../../lib/api";
+import { logout, useUser } from "../../lib/api";
 
 export default function Header() {
   const { data, isLoading } = useUser();
@@ -32,15 +32,16 @@ export default function Header() {
         {!isLoading && (
           <Menu.Item key="login">
             {data ? (
-              <>
-                <Avatar
-                  shape="square"
-                  src={<AntdImage src={data.avatar_url} alt="avatar" />}
-                />{" "}
-                {data.email}
-              </>
+              <span
+                onClick={async () => {
+                  await logout();
+                  location.reload();
+                }}
+              >
+                <Avatar shape="square" src={data.avatar_url} /> {data.email}
+              </span>
             ) : (
-              "Log in"
+              <Link href="/login">Log In</Link>
             )}
           </Menu.Item>
         )}

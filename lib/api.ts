@@ -107,8 +107,12 @@ export const deleteTimeEntry = (entryId: number) => {
   return axios.delete(`${HARVEST_API_URL}/time_entries/${entryId}`);
 };
 
+export const logout = () => {
+  return axios.get(`/api/logout`);
+};
+
 export const useUser = () => {
-  const { data, error } = useSWR<User>(`/api/harvest/users/me`);
+  const { data, error } = useSWR<User>(`${HARVEST_API_URL}/users/me`);
   return {
     data,
     isLoading: !error && !data,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { NextPage } from "next";
 import moment from "moment";
 import {
@@ -13,14 +13,16 @@ import {
   Button,
   Dropdown,
   Input,
-  message,
-  Skeleton,
   Menu,
-  Statistic,
   PageHeader,
+  Skeleton,
+  Space,
+  Statistic,
+  message,
 } from "antd";
+import { useSWRConfig } from "swr";
 import { Day, getDaysInMonthRange, weekdaysInMonth } from "../utils";
-import { Task, TimeEntry } from "../types";
+import { TimeEntry } from "../types";
 import {
   createTimeEntry,
   deleteTimeEntry,
@@ -30,7 +32,6 @@ import {
   updateTimeEntry,
   useTimeEntries,
 } from "../lib/api";
-import { useSWRConfig } from "swr";
 
 const Home: NextPage = () => {
   return (
@@ -79,6 +80,9 @@ const TimeEntries = () => {
     (acc, entry) => acc + entry.hours,
     0
   );
+  const clientHours = entries
+    ?.filter((e) => e.task.id === PRIMARY_TASK_ID)
+    .reduce((acc, entry) => acc + entry.hours, 0);
   return (
     <div>
       <PageHeader
@@ -137,29 +141,31 @@ const TimeEntries = () => {
         <div
           style={{
             display: "flex",
-            width: "max-content",
-            justifyContent: "flex-end",
           }}
         >
-          <Statistic
-            loading={!entries}
-            title="Days missing a note"
-            value={daysMissingNotes}
-            prefix={
-              !daysMissingNotes &&
-              trackedHoursInMonth === hoursInMonth && <LikeOutlined />
-            }
-            style={{
-              marginRight: 32,
-            }}
-          />
-          <Statistic
-            loading={!entries}
-            title="Tracked hours"
-            value={trackedHoursInMonth}
-            suffix={` / ${hoursInMonth}`}
-            prefix={trackedHoursInMonth === hoursInMonth && <LikeOutlined />}
-          />
+          <Space>
+            <Statistic
+              loading={!entries}
+              title="Days missing a note"
+              value={daysMissingNotes}
+              prefix={
+                !daysMissingNotes &&
+                trackedHoursInMonth === hoursInMonth && <LikeOutlined />
+              }
+            />
+            <Statistic
+              loading={!entries}
+              title="Total tracked hours"
+              value={trackedHoursInMonth}
+              suffix={` / ${hoursInMonth}`}
+              prefix={trackedHoursInMonth === hoursInMonth && <LikeOutlined />}
+            />
+            <Statistic
+              loading={!entries}
+              title="Tracked hours for client"
+              value={clientHours}
+            />
+          </Space>
         </div>
       </PageHeader>
       <div style={{ marginLeft: 20 }}>
