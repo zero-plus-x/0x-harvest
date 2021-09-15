@@ -25,7 +25,7 @@ const Login: NextPage = (props: {
 
   useEffect(() => {
     if (props.isLoggedIn) {
-      router.push("/");
+      // router.push("/");
     } else {
       window.location.replace("/api/oauth2");
     }

@@ -15,7 +15,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const { isLoggedIn, isLoading } = useIsLoggedIn();
   useEffect(() => {
     if (!isLoading && !isLoggedIn && !publicRoutes.includes(router.pathname)) {
-      router.push("/login");
+      // router.push("/login");
     }
     // else if (isLoggedIn && publicRoutes.includes(router.pathname)) {
     //   router.push("/");
