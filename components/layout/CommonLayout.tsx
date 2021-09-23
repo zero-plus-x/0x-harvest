@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout } from "antd";
+import { Col, Layout, Row } from "antd";
 import Header from "./Header";
 
 export default function CommonLayout({
@@ -10,8 +10,14 @@ export default function CommonLayout({
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Header />
-      <Layout.Content style={{ padding: "10px 50px" }}>
-        <div>{children}</div>
+      <Layout.Content>
+        <Row>
+          <Col sm={2} xs={0}></Col>
+          <Col sm={20} xs={24}>
+            {children}
+          </Col>
+          <Col sm={2} xs={0}></Col>
+        </Row>
       </Layout.Content>
     </Layout>
   );
