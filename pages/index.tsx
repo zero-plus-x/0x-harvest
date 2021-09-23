@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import type { NextPage } from "next";
+import type { NextApiRequest, NextPage } from "next";
 import moment from "moment";
+import nookies from "nookies";
 import {
   DeleteOutlined,
   LeftOutlined,
@@ -32,6 +33,9 @@ import {
   updateTimeEntry,
   useTimeEntries,
 } from "../lib/api";
+import { requireAuth } from "../lib/routeGuards";
+
+export const getServerSideProps = requireAuth;
 
 const Home: NextPage = () => {
   return (

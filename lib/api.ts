@@ -111,8 +111,10 @@ export const logout = () => {
   return axios.get(`/api/logout`);
 };
 
-export const useUser = () => {
-  const { data, error } = useSWR<User>(`${HARVEST_API_URL}/users/me`);
+export const useUser = (shouldFetch?: boolean) => {
+  const { data, error } = useSWR<User>(
+    !shouldFetch ? `${HARVEST_API_URL}/users/me` : null
+  );
   return {
     data,
     isLoading: !error && !data,

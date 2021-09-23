@@ -7,6 +7,9 @@ import { TimeEntry } from "../types";
 import { specialTasks, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
 import { vacationAllowancePerYear } from "./settings";
+import { requireAuth } from "../lib/routeGuards";
+
+export const getServerSideProps = requireAuth;
 
 const Vacation: NextPage = () => {
   const router = useRouter();

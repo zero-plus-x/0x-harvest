@@ -1,39 +1,16 @@
-import { Spin } from "antd";
-import type { NextPage, NextPageContext } from "next";
-import { useRouter } from "next/dist/client/router";
-import nookies from "nookies";
-import { ReactNode, useEffect } from "react";
+import { Button } from "antd";
+import type { NextPage } from "next";
 import CommonLayout from "../components/layout/CommonLayout";
+import { forbidAuth } from "../lib/routeGuards";
 
-export async function getServerSideProps(context: NextPageContext) {
-  const cookies = nookies.get(context);
-  return {
-    props: {
-      isLoggedIn:
-        cookies.HARVEST_ACCESS_TOKEN && cookies.HARVEST_ACCOUNT_ID
-          ? true
-          : false,
-    },
-  };
-}
+export const getServerSideProps = forbidAuth;
 
-const Login: NextPage = (props: {
-  isLoggedIn?: boolean;
-  children?: ReactNode;
-}) => {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (props.isLoggedIn) {
-      // router.push("/");
-    } else {
-      window.location.replace("/api/oauth2");
-    }
-  }, [router, props.isLoggedIn]);
-
+const Login: NextPage = () => {
   return (
     <CommonLayout>
-      <Spin />
+      <Button onClick={() => window.location.replace("/api/oauth2")}>
+        Login via Harvest
+      </Button>
     </CommonLayout>
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, Layout, Avatar, Image as AntdImage } from "antd";
+import { Menu, Layout, Avatar } from "antd";
 import Link from "next/link";
 import Image from "next/image";
 import { logout, useUser } from "../../lib/api";
