@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import CommonLayout from "../components/layout/CommonLayout";
 import { requireAuth } from "../lib/routeGuards";
 
-export const getServerSideProps = requireAuth;
+// export const getServerSideProps = requireAuth;
 
 export const vacationAllowancePerYear: Record<number, number | undefined> = {
   2020: 10,

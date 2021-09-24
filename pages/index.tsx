@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import type { NextApiRequest, NextPage } from "next";
+import type { NextPage } from "next";
 import moment from "moment";
-import nookies from "nookies";
 import {
   DeleteOutlined,
   LeftOutlined,
@@ -143,35 +142,29 @@ const TimeEntries = () => {
           ))
         }
       >
-        <div
-          style={{
-            display: "flex",
-          }}
-        >
-          <Space>
-            <Statistic
-              loading={!entries}
-              title="Days missing a note"
-              value={daysMissingNotes}
-              prefix={
-                !daysMissingNotes &&
-                trackedHoursInMonth === hoursInMonth && <LikeOutlined />
-              }
-            />
-            <Statistic
-              loading={!entries}
-              title="Total tracked hours"
-              value={trackedHoursInMonth}
-              suffix={` / ${hoursInMonth}`}
-              prefix={trackedHoursInMonth === hoursInMonth && <LikeOutlined />}
-            />
-            <Statistic
-              loading={!entries}
-              title="Tracked hours for client"
-              value={clientHours}
-            />
-          </Space>
-        </div>
+        <Space size="large">
+          <Statistic
+            loading={!entries}
+            title="Days missing a note"
+            value={daysMissingNotes}
+            prefix={
+              !daysMissingNotes &&
+              trackedHoursInMonth === hoursInMonth && <LikeOutlined />
+            }
+          />
+          <Statistic
+            loading={!entries}
+            title="Total tracked hours"
+            value={trackedHoursInMonth}
+            suffix={` / ${hoursInMonth}`}
+            prefix={trackedHoursInMonth === hoursInMonth && <LikeOutlined />}
+          />
+          <Statistic
+            loading={!entries}
+            title="Tracked hours for client"
+            value={clientHours}
+          />
+        </Space>
       </PageHeader>
       <div style={{ marginLeft: 20 }}>
         {entries ? (
