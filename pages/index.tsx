@@ -22,13 +22,14 @@ import {
   message,
 } from "antd";
 import { useSWRConfig } from "swr";
-import { Day, getDaysInMonthRange, weekdaysInMonth } from "../utils";
+import { Day, getDaysInMonthRange, groupBy, weekdaysInMonth } from "../utils";
 import { TimeEntry } from "../types";
 import {
   createTimeEntry,
   deleteTimeEntry,
   FALLBACK_HOURS,
   PRIMARY_TASK_ID,
+  projects,
   specialTasks,
   updateTimeEntry,
   useTimeEntries,
@@ -412,23 +413,35 @@ const TimeEntryInput = ({
   if (!entry) {
     const menu = (
       <Menu>
-        {Object.values(specialTasks)
-          .filter((t) => t.harvestTaskId !== PRIMARY_TASK_ID)
-          .map((t) => (
-            <Menu.Item
-              key={t.harvestTaskId}
-              icon={<PlusOutlined />}
-              onClick={async () =>
-                await createEntry(
-                  t.harvestProjectId,
-                  t.harvestTaskId,
-                  t.defaultHours
-                )
-              }
-            >
-              {t.displayName} {t.emoji}
-            </Menu.Item>
-          ))}
+        {Array.from(
+          groupBy(
+            Object.values(specialTasks).filter(
+              (t) => t.harvestTaskId !== PRIMARY_TASK_ID
+            ),
+            "harvestProjectId"
+          ).entries()
+        ).map(([projectId, tasks]) => (
+          <Menu.ItemGroup
+            key={projectId}
+            title={projects[projectId] || projectId}
+          >
+            {tasks.map((t) => (
+              <Menu.Item
+                key={t.harvestTaskId}
+                icon={<PlusOutlined />}
+                onClick={async () =>
+                  await createEntry(
+                    t.harvestProjectId,
+                    t.harvestTaskId,
+                    t.defaultHours
+                  )
+                }
+              >
+                {t.displayName} {t.emoji}
+              </Menu.Item>
+            ))}
+          </Menu.ItemGroup>
+        ))}
       </Menu>
     );
 

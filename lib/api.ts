@@ -18,6 +18,11 @@ type SpecialTask = {
 export const PRIMARY_TASK_ID = 5268825;
 export const FALLBACK_HOURS = 8;
 
+export const projects: Record<number, string> = {
+  11820549: "Absence",
+  9788476: "Internal",
+};
+
 export const specialTasks: Record<string, SpecialTask> = {
   diceJakub: {
     harvestTaskId: 5268825,
@@ -55,6 +60,27 @@ export const specialTasks: Record<string, SpecialTask> = {
     displayName: "Sick day",
     emoji: "🤢",
     noteRequired: false,
+  },
+  unpaidVacation: {
+    harvestTaskId: 6646908,
+    harvestProjectId: 11820549,
+    displayName: "Unpaid vacation",
+    emoji: "⏸",
+    noteRequired: false,
+  },
+  vab: {
+    harvestTaskId: 6646905,
+    harvestProjectId: 11820549,
+    displayName: "VAB",
+    emoji: "👶",
+    noteRequired: false,
+  },
+  internalHours: {
+    harvestTaskId: 6615741,
+    harvestProjectId: 9788476,
+    displayName: "Internal hours",
+    emoji: "💻",
+    noteRequired: true,
   },
 };
 
