@@ -7,16 +7,18 @@ import { requireAuth } from "../lib/routeGuards";
 export const getServerSideProps = requireAuth;
 
 export const vacationAllowancePerYear: Record<number, number | undefined> = {
-  2020: 10,
-  2021: 30,
-  2022: 35,
+  2020: 25,
+  2021: 25,
+  2022: 25,
 };
 
 const Settings: NextPage = () => {
   return (
     <CommonLayout>
       <Row>
-        <Col>
+        <Col style={{ marginTop: 20 }}>
+          <i>This section is a work in progress</i>
+          <br />
           Vacation allowance in years:
           {Object.entries(vacationAllowancePerYear).map((year) => (
             <div key={year[0]}>
