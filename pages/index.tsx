@@ -472,7 +472,10 @@ const TimeEntryInput = ({
             }
           }}
         >
-          <PlusOutlined /> {FALLBACK_HOURS} hour {primaryTask?.taskName} entry
+          <PlusOutlined /> {FALLBACK_HOURS} hour{" "}
+          {primaryTask?.taskName === "Software Development"
+            ? "work"
+            : primaryTask?.taskName}{" "}
         </Dropdown.Button>
       </>
     );
