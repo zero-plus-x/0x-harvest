@@ -4,7 +4,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import CommonLayout from "../components/layout/CommonLayout";
 import { Button, PageHeader, Skeleton, Statistic } from "antd";
 import { TimeEntry } from "../types";
-import { specialTasks, useTimeEntries } from "../lib/api";
+import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
 import { vacationAllowancePerYear } from "./settings";
 import { requireAuth } from "../lib/routeGuards";
@@ -24,7 +24,7 @@ const Vacation: NextPage = () => {
   const { data: vacationEntries } = useTimeEntries(
     moment().set("year", year).startOf("year"),
     moment().set("year", year).endOf("year"),
-    specialTasks.paidVacation.harvestTaskId
+    PAID_VACATION_TASK_ID
   );
 
   return (

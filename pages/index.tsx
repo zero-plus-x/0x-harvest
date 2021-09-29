@@ -19,18 +19,25 @@ import {
   Space,
   Statistic,
   message,
+  Tooltip,
 } from "antd";
 import { useSWRConfig } from "swr";
-import { Day, getDaysInMonthRange, groupBy, weekdaysInMonth } from "../utils";
+import {
+  Day,
+  getDaysInMonthRange,
+  usePrimaryTask,
+  weekdaysInMonth,
+} from "../utils";
 import { TimeEntry } from "../types";
 import {
   createTimeEntry,
   deleteTimeEntry,
   FALLBACK_HOURS,
-  PRIMARY_TASK_ID,
+  HARVEST_DATE_FORMAT,
   projects,
   specialTasks,
   updateTimeEntry,
+  useProjectAssignments,
   useTimeEntries,
 } from "../lib/api";
 import { requireAuth } from "../lib/routeGuards";
@@ -52,10 +59,12 @@ const TimeEntries = () => {
 
   const [currentYear, setCurrentYear] = useState(moment().year());
   const [currentMonth, setCurrentMonth] = useState(moment().month());
+  const primaryTask = usePrimaryTask();
   const currentDate = useMemo(
     () => moment(new Date(currentYear, currentMonth, 1)),
     [currentYear, currentMonth]
   );
+
   const formattedDate = currentDate.format("MMMM YYYY");
 
   const { data: entries, cacheKey } = useTimeEntries(
@@ -71,12 +80,11 @@ const TimeEntries = () => {
 
   const loadMonth = () => mutate(cacheKey);
 
-  const daysMissingNotes = entries?.filter(
+  const entriesMissingNote = entries?.filter(
     (entry) =>
       !entry.notes &&
-      Object.values(specialTasks).find(
-        (t) => t.harvestProjectId === entry.project.id
-      )?.noteRequired
+      (specialTasks[entry.task.id]?.noteRequired ||
+        !specialTasks[entry.task.id])
   ).length;
   const hoursInMonth =
     weekdaysInMonth(currentDate.year(), currentDate.month()) * 8;
@@ -85,8 +93,16 @@ const TimeEntries = () => {
     0
   );
   const clientHours = entries
-    ?.filter((e) => e.task.id === PRIMARY_TASK_ID)
+    ?.filter(
+      (e) =>
+        // note that primaryTask is derived based on the most commonly-used task in the last 30 days
+        // it would be safer to let the user select their primary task in the UI
+        e.task.id === primaryTask?.taskId &&
+        // client task is not part of the default absence/0+x internal projects
+        !projects[e.project.id]
+    )
     .reduce((acc, entry) => acc + entry.hours, 0);
+
   return (
     <div>
       <PageHeader
@@ -145,10 +161,10 @@ const TimeEntries = () => {
         <Space size="large">
           <Statistic
             loading={!entries}
-            title="Days missing a note"
-            value={daysMissingNotes}
+            title="Entries missing a note"
+            value={entriesMissingNote}
             prefix={
-              !daysMissingNotes &&
+              !entriesMissingNote &&
               trackedHoursInMonth === hoursInMonth && <LikeOutlined />
             }
           />
@@ -181,7 +197,8 @@ const TimeEntries = () => {
                       )
                         .reverse()
                         .map((day) => {
-                          const harvestDate = day.date.format("YYYY-MM-DD");
+                          const harvestDate =
+                            day.date.format(HARVEST_DATE_FORMAT);
                           const dayEntries = entries.filter(
                             (e) => e.spent_date === harvestDate
                           );
@@ -246,9 +263,9 @@ const TimeEntryRow = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const tdStyle = { padding: 3 };
-  const specialTask = Object.values(specialTasks).find(
-    (t) => t.harvestTaskId === entry?.task.id
-  );
+  const primaryTask = usePrimaryTask();
+  const specialTask = entry ? specialTasks[entry?.task.id] : undefined;
+
   return (
     <tr className="ant-table-row" style={{ height: 35 }}>
       <td
@@ -259,27 +276,38 @@ const TimeEntryRow = ({
         }}
         className="ant-table-cell"
       >
-        {showDate && day.date.format("YYYY-MM-DD")}
+        {showDate && day.date.format(HARVEST_DATE_FORMAT)}
       </td>
       <td style={{ ...tdStyle, textAlign: "center" }}>
-        {!specialTask?.hideNote && (
-          <>{specialTask?.displayName ?? entry?.task.name}</>
+        {(!specialTask || specialTask?.noteRequired) && (
+          <Tooltip
+            title={
+              <>
+                <p>Project ID: {entry?.project.id}</p>
+                <p>Task ID: {entry?.task.id}</p>
+                <p>Task Name: {entry?.task.name}</p>
+              </>
+            }
+          >
+            {specialTask?.displayName ?? entry?.task.name}
+          </Tooltip>
         )}
       </td>
       <td
         style={{ ...tdStyle, width: 500, textAlign: "center" }}
         className="ant-table-cell"
       >
-        {day.isBusinessDay && !specialTask?.hideNote ? (
+        {day.isBusinessDay && (specialTask?.noteRequired || !specialTask) ? (
           <TimeEntryInput
             day={day}
             entry={entry}
             loadMonth={loadMonth}
             setEntries={setEntries}
           />
-        ) : specialTask?.hideNote ? (
+        ) : specialTask && !specialTask?.noteRequired ? (
           <i>
-            {specialTask.emoji} {specialTask.displayName} {specialTask.emoji}
+            {specialTask.emoji} {specialTask?.displayName ?? entry?.task.name}{" "}
+            {specialTask.emoji}
           </i>
         ) : (
           <i>weekend</i>
@@ -290,7 +318,7 @@ const TimeEntryRow = ({
         className="ant-table-cell"
       >
         {entry?.hours && `${entry.hours} hours`}
-        {!entry && day.date.isoWeekday() === 1 && (
+        {!entry && day.date.isoWeekday() === 1 && primaryTask && (
           <Button
             disabled={loading}
             loading={loading}
@@ -301,9 +329,9 @@ const TimeEntryRow = ({
                 .fill(1)
                 .map(() => {
                   const promise = createTimeEntry(
-                    currentDate.format("YYYY-MM-DD"),
-                    specialTasks.diceJakub.harvestProjectId,
-                    specialTasks.diceJakub.harvestTaskId
+                    currentDate.format(HARVEST_DATE_FORMAT),
+                    primaryTask.projectId,
+                    primaryTask.taskId
                   );
                   currentDate.add(1, "day");
                   return promise;
@@ -328,8 +356,7 @@ const TimeEntryRow = ({
               }
             }}
           >
-            <PlusOutlined /> {specialTasks.diceJakub.displayName} entries for
-            this week
+            <PlusOutlined /> Work entries for this week
           </Button>
         )}
       </td>
@@ -373,6 +400,9 @@ const TimeEntryInput = ({
   const [notes, setNotes] = useState(entry?.notes || "");
   const [loading, setLoading] = useState(false);
 
+  const { data: projectAssignments } = useProjectAssignments();
+  const primaryTask = usePrimaryTask();
+
   const createEntry = async (
     projectId: number,
     taskId: number,
@@ -380,7 +410,7 @@ const TimeEntryInput = ({
   ) => {
     setLoading(true);
     const response = await createTimeEntry(
-      day.date.format("YYYY-MM-DD"),
+      day.date.format(HARVEST_DATE_FORMAT),
       projectId,
       taskId,
       hours
@@ -406,58 +436,43 @@ const TimeEntryInput = ({
   if (!entry) {
     const menu = (
       <Menu>
-        {Array.from(
-          groupBy(
-            Object.values(specialTasks).filter(
-              (t) => t.harvestTaskId !== PRIMARY_TASK_ID
-            ),
-            "harvestProjectId"
-          ).entries()
-        ).map(([projectId, tasks]) => (
-          <Menu.ItemGroup
-            key={projectId}
-            title={projects[projectId] || projectId}
-          >
-            {tasks.map((t) => (
-              <Menu.Item
-                key={t.harvestTaskId}
-                icon={<PlusOutlined />}
-                onClick={async () =>
-                  await createEntry(
-                    t.harvestProjectId,
-                    t.harvestTaskId,
-                    t.defaultHours
-                  )
-                }
-              >
-                {t.displayName} {t.emoji}
-              </Menu.Item>
-            ))}
+        {projectAssignments?.map((p) => (
+          <Menu.ItemGroup key={p.project.id} title={p.project.name}>
+            {p.task_assignments.map((t) => {
+              const override = specialTasks[t.task.id];
+              return (
+                <Menu.Item
+                  key={t.task.id}
+                  icon={<PlusOutlined />}
+                  onClick={async () =>
+                    await createEntry(p.project.id, t.task.id, FALLBACK_HOURS)
+                  }
+                >
+                  {t.task.name} {override?.emoji}
+                </Menu.Item>
+              );
+            })}
           </Menu.ItemGroup>
         ))}
       </Menu>
     );
 
-    const primaryTask = Object.values(specialTasks).find(
-      (t) => t.harvestTaskId === PRIMARY_TASK_ID
-    );
     return (
       <>
         <Dropdown.Button
           overlay={menu}
-          disabled={loading || !primaryTask}
+          disabled={loading}
           onClick={async () => {
             if (primaryTask) {
               await createEntry(
-                primaryTask.harvestProjectId,
-                primaryTask.harvestTaskId,
-                primaryTask.defaultHours
+                primaryTask.projectId,
+                primaryTask.taskId,
+                FALLBACK_HOURS
               );
             }
           }}
         >
-          <PlusOutlined /> {primaryTask?.defaultHours || FALLBACK_HOURS} hour{" "}
-          {primaryTask?.displayName} entry
+          <PlusOutlined /> {FALLBACK_HOURS} hour {primaryTask?.taskName} entry
         </Dropdown.Button>
       </>
     );

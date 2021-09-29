@@ -1,84 +1,59 @@
 import axios from "axios";
 import moment from "moment";
 import useSWR from "swr";
-import { TimeEntry, User } from "../types";
+import { ProjectAssignment, TimeEntry, User } from "../types";
 
 const HARVEST_API_URL = "/api/harvest";
 
 type SpecialTask = {
-  harvestTaskId: number;
-  harvestProjectId: number;
-  displayName: string;
+  displayName?: string;
   noteRequired: boolean;
   emoji?: string;
   defaultHours?: number;
-  hideNote?: boolean;
 };
 
-export const PRIMARY_TASK_ID = 5268825;
+export const PAID_VACATION_TASK_ID = 6646907;
 export const FALLBACK_HOURS = 8;
+export const HARVEST_DATE_FORMAT = "YYYY-MM-DD";
 
 export const projects: Record<number, string> = {
   11820549: "Absence",
   9788476: "Internal",
 };
 
-export const specialTasks: Record<string, SpecialTask> = {
-  diceJakub: {
-    harvestTaskId: 5268825,
-    harvestProjectId: 22792018,
-    displayName: "DICE",
-    noteRequired: true,
-    emoji: "🤖",
-  },
-  paidVacation: {
-    harvestTaskId: 6646907,
-    harvestProjectId: 11820549,
-    displayName: "Paid vacation",
+export const specialTasks: { [taskId: number]: SpecialTask } = {
+  [PAID_VACATION_TASK_ID]: {
+    // displayName: "Paid vacation",
     noteRequired: false,
     emoji: "🏖️",
-    hideNote: true,
   },
-  publicHoliday: {
-    harvestTaskId: 8114249,
-    harvestProjectId: 11820549,
-    displayName: "Public holiday",
+  8114249: {
+    // displayName: "Public holiday",
     noteRequired: false,
     emoji: "🎅",
-    hideNote: true,
   },
-  conferenceDay: {
-    harvestTaskId: 6616441,
-    harvestProjectId: 9788476,
-    displayName: "Conference day",
+  6616441: {
+    // displayName: "Conference day",
     emoji: "📚",
     noteRequired: false,
   },
-  sickDay: {
-    harvestTaskId: 6646904,
-    harvestProjectId: 11820549,
-    displayName: "Sick day",
+  6646904: {
+    // displayName: "Sick day",
     emoji: "🤢",
     noteRequired: false,
   },
-  unpaidVacation: {
-    harvestTaskId: 6646908,
-    harvestProjectId: 11820549,
-    displayName: "Unpaid vacation",
+  6646908: {
+    // displayName: "Unpaid vacation",
     emoji: "⏸",
     noteRequired: false,
   },
-  vab: {
-    harvestTaskId: 6646905,
-    harvestProjectId: 11820549,
-    displayName: "VAB",
+  6646905: {
+    // displayName: "VAB",
     emoji: "👶",
     noteRequired: false,
   },
-  internalHours: {
-    harvestTaskId: 6615741,
-    harvestProjectId: 9788476,
-    displayName: "Internal hours",
+  6615741: {
+    // displayName: "Internal hours",
     emoji: "💻",
     noteRequired: true,
   },
@@ -90,8 +65,8 @@ export const useTimeEntries = (
   taskId?: number
 ) => {
   let cacheKey = `${HARVEST_API_URL}/time_entries?from=${from.format(
-    "YYYY-MM-DD"
-  )}&to=${to.format("YYYY-MM-DD")}`;
+    HARVEST_DATE_FORMAT
+  )}&to=${to.format(HARVEST_DATE_FORMAT)}`;
   if (taskId) {
     cacheKey += `&task_id=${taskId}`;
   }
@@ -99,6 +74,25 @@ export const useTimeEntries = (
     fetch(resource, init)
       .then((res) => res.json())
       .then((res) => res.time_entries)
+  );
+
+  return {
+    cacheKey,
+    data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};
+
+export const useProjectAssignments = () => {
+  const cacheKey = `${HARVEST_API_URL}/users/me/project_assignments`;
+
+  const { data, error } = useSWR<ProjectAssignment[]>(
+    cacheKey,
+    (resource, init) =>
+      fetch(resource, init)
+        .then((res) => res.json())
+        .then((res) => res.project_assignments)
   );
 
   return {

@@ -28,6 +28,7 @@ export default async function handler(
           : JSON.stringify(req.body),
       });
       const respText = await resp.text();
+      res.setHeader("content-type", "application/json");
       res.status(resp.status).write(respText);
       res.end();
       return;

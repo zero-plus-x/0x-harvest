@@ -1,4 +1,5 @@
 import moment from "moment";
+import { useProjectAssignments, useTimeEntries } from "./lib/api";
 
 export const weekdaysInMonth = (year: number, month: number) => {
   return getDaysInMonthRange(year, month).reduce(
@@ -23,16 +24,44 @@ export const getDaysInMonthRange = (year: number, month: number): Day[] => {
   return days;
 };
 
-export function groupBy<T, K extends keyof T>(array: T[], key: K) {
-  const map = new Map<T[K], T[]>();
-  array.forEach((item) => {
-    const itemKey = item[key];
-    if (!map.has(itemKey)) {
-      map.set(
-        itemKey,
-        array.filter((i) => i[key] === item[key])
-      );
+/**
+ * Returns the most-used task during the last 30 days. Defaults to the first task returned for the user if there is no history.
+ */
+export const usePrimaryTask = ():
+  | { projectId: number; taskId: number; taskName: string }
+  | undefined => {
+  const start = moment().subtract(30, "day");
+  const end = moment();
+
+  const { data: projectAssignments } = useProjectAssignments();
+  const { data: entries } = useTimeEntries(start, end);
+
+  if (!entries?.length) {
+    const projectId = projectAssignments?.[0].project.id;
+    const task = projectAssignments?.[0].task_assignments[0]?.task;
+    if (projectId && task) {
+      return { projectId, taskId: task.id, taskName: task.name };
     }
+    return undefined;
+  }
+  const occurences: Record<number, number> = {};
+
+  entries?.forEach((e) => {
+    if (!occurences[e.task.id]) {
+      occurences[e.task.id] = 0;
+    }
+    occurences[e.task.id] = occurences[e.task.id] + 1;
   });
-  return map;
-}
+
+  const mostCommonTaskId = parseInt(
+    Object.entries(occurences).sort((a, b) => b[1] - a[1])[0]?.[0] || ""
+  );
+  const mostCommonTask = entries?.find((e) => e.task.id === mostCommonTaskId);
+  return mostCommonTask
+    ? {
+        projectId: mostCommonTask.project.id,
+        taskId: mostCommonTask.task.id,
+        taskName: mostCommonTask.task.name,
+      }
+    : undefined;
+};

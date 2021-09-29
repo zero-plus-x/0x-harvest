@@ -9,6 +9,7 @@ export type TimeEntry = {
 
 export type Project = {
   id: number;
+  name: string;
 };
 
 export type Task = {
@@ -34,4 +35,13 @@ export type Company = {
   id: number;
   name: string;
   full_domain: string;
+};
+
+export type TaskAssignment = {
+  task: Task;
+};
+
+export type ProjectAssignment = {
+  project: Project;
+  task_assignments: TaskAssignment[];
 };
