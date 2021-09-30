@@ -6,8 +6,9 @@ import { Button, PageHeader, Skeleton, Statistic } from "antd";
 import { TimeEntry } from "../types";
 import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
-import { vacationAllowancePerYear } from "./settings";
 import { requireAuth } from "../lib/routeGuards";
+import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
+import { useState } from "react";
 
 export const getServerSideProps = requireAuth;
 
@@ -100,16 +101,10 @@ const VacationsDaysLeft = ({
   vacationEntries?: TimeEntry[];
   year: number;
 }) => {
-  const vacationYearAllowance = vacationAllowancePerYear[year];
+  const [vacationAllowance] = useState(() => getVacationAllowance());
+  const vacationYearAllowance =
+    vacationAllowance[year] || DEFAULT_VACATION_ALLOWANCE;
 
-  if (vacationYearAllowance === undefined) {
-    return (
-      <>
-        Spent vacation days in {year}: {vacationEntries?.length} (vacation
-        allowance not set in settings)
-      </>
-    );
-  }
   return (
     <Statistic
       loading={!vacationEntries}

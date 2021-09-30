@@ -1,6 +1,9 @@
 import moment from "moment";
 import { useProjectAssignments, useTimeEntries } from "./lib/api";
 
+export const VACATION_ALLOWANCE_KEY = "vacationAllowance";
+export const DEFAULT_VACATION_ALLOWANCE = 25;
+
 export const weekdaysInMonth = (year: number, month: number) => {
   return getDaysInMonthRange(year, month).reduce(
     (acc, day) => acc + (day.isBusinessDay ? 1 : 0),
@@ -64,4 +67,19 @@ export const usePrimaryTask = ():
         taskName: mostCommonTask.task.name,
       }
     : undefined;
+};
+
+export const getVacationAllowance = () => {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const persistedAllowance = localStorage.getItem(VACATION_ALLOWANCE_KEY);
+  if (persistedAllowance) {
+    try {
+      return JSON.parse(persistedAllowance);
+    } catch (e) {
+      return {};
+    }
+  }
 };
