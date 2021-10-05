@@ -24,7 +24,7 @@ const Settings: NextPage = () => {
   return (
     <CommonLayout>
       <Row>
-        <Col style={{ marginTop: 20 }}>
+        <Col>
           Vacation allowance in years:
           {years.map((year) => (
             <div key={year}>
