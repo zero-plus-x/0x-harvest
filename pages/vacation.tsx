@@ -1,14 +1,14 @@
 import type { NextPage } from "next";
 import moment from "moment";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import CommonLayout from "../components/layout/CommonLayout";
-import { Button, PageHeader, Row, Skeleton, Statistic } from "antd";
+import { Alert, Button, Col, PageHeader, Row, Skeleton, Statistic } from "antd";
 import { TimeEntry } from "../types";
 import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
 import { requireAuth } from "../lib/routeGuards";
 import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
 import { useState } from "react";
+import Link from "next/link";
 
 export const getServerSideProps = requireAuth;
 
@@ -76,15 +76,7 @@ const Vacation: NextPage = () => {
           )
         }
       >
-        <div
-          style={{
-            display: "flex",
-            width: "max-content",
-            justifyContent: "flex-end",
-          }}
-        >
-          <VacationsDaysLeft vacationEntries={vacationEntries} year={year} />
-        </div>
+        <VacationsDaysLeft vacationEntries={vacationEntries} year={year} />
       </PageHeader>
 
       <VacationsDays vacationEntries={vacationEntries} />
@@ -106,12 +98,33 @@ const VacationsDaysLeft = ({
     vacationAllowance[year] || DEFAULT_VACATION_ALLOWANCE;
 
   return (
-    <Statistic
-      loading={!vacationEntries}
-      title="Vacation days left this year"
-      value={vacationYearAllowance - (vacationEntries?.length || 0)}
-      suffix={` / ${vacationYearAllowance}`}
-    />
+    <>
+      {!Object.keys(vacationAllowance).length && typeof window !== "undefined" && (
+        <Row>
+          <Col>
+            <Alert
+              type="info"
+              message={
+                <>
+                  You can set your vacation allowance per year in{" "}
+                  <Link href="/settings">Settings</Link>
+                </>
+              }
+            />
+          </Col>
+        </Row>
+      )}
+      <Row>
+        <Col>
+          <Statistic
+            loading={!vacationEntries}
+            title="Vacation days left this year"
+            value={vacationYearAllowance - (vacationEntries?.length || 0)}
+            suffix={` / ${vacationYearAllowance}`}
+          />
+        </Col>
+      </Row>
+    </>
   );
 };
 

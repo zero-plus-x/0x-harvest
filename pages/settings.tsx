@@ -2,7 +2,6 @@ import React from "react";
 import moment from "moment";
 import { Col, InputNumber, Row } from "antd";
 import type { NextPage } from "next";
-import CommonLayout from "../components/layout/CommonLayout";
 import { requireAuth } from "../lib/routeGuards";
 import {
   DEFAULT_VACATION_ALLOWANCE,

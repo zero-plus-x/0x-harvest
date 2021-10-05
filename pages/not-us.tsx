@@ -1,6 +1,5 @@
 import { Result } from "antd";
 import type { NextPage } from "next";
-import CommonLayout from "../components/layout/CommonLayout";
 
 const Settings: NextPage = () => {
   return (

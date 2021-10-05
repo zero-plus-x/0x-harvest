@@ -1,6 +1,5 @@
 import { Button } from "antd";
 import type { NextPage } from "next";
-import CommonLayout from "../components/layout/CommonLayout";
 import { forbidAuth } from "../lib/routeGuards";
 
 export const getServerSideProps = forbidAuth;

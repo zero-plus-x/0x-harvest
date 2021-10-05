@@ -69,7 +69,7 @@ export const usePrimaryTask = ():
     : undefined;
 };
 
-export const getVacationAllowance = () => {
+export const getVacationAllowance = (): Record<number, number> => {
   if (typeof window === "undefined") {
     return {};
   }
@@ -82,4 +82,5 @@ export const getVacationAllowance = () => {
       return {};
     }
   }
+  return {};
 };

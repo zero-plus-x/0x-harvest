@@ -8,7 +8,6 @@ import {
   PlusOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import CommonLayout from "../components/layout/CommonLayout";
 import {
   Button,
   Dropdown,
