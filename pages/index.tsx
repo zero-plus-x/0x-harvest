@@ -39,9 +39,6 @@ import {
   useProjectAssignments,
   useTimeEntries,
 } from "../lib/api";
-import { requireAuth } from "../lib/routeGuards";
-
-export const getServerSideProps = requireAuth;
 
 const Home: NextPage = () => {
   return <TimeEntries />;

@@ -5,30 +5,27 @@ import type { AppProps } from "next/app";
 
 import "antd/dist/antd.css";
 import React from "react";
-import { Router } from "next/router";
-import { Spin } from "antd";
+import { useRouter } from "next/router";
 import CommonLayout from "../components/layout/CommonLayout";
+import { useUser } from "../lib/api";
+
+const publicPaths = ["/login"];
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const [loading, setLoading] = React.useState(false);
+  const { isError } = useUser();
+  const router = useRouter();
+
   React.useEffect(() => {
-    const start = () => {
-      console.log("start");
-      setLoading(true);
-    };
-    const end = () => {
-      console.log("findished");
-      setLoading(false);
-    };
-    Router.events.on("routeChangeStart", start);
-    Router.events.on("routeChangeComplete", end);
-    Router.events.on("routeChangeError", end);
-    return () => {
-      Router.events.off("routeChangeStart", start);
-      Router.events.off("routeChangeComplete", end);
-      Router.events.off("routeChangeError", end);
-    };
-  }, []);
+    if (isError) {
+      const path = router.asPath.split("?")[0];
+      if (!publicPaths.includes(path)) {
+        console.log("Redirecting to login");
+        router.push({
+          pathname: "/login",
+        });
+      }
+    }
+  }, [isError, router]);
 
   return (
     <>
@@ -42,7 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
       >
         <CommonLayout>
-          {loading ? <Spin /> : <Component {...pageProps} />}
+          <Component {...pageProps} />
         </CommonLayout>
       </SWRConfig>
     </>

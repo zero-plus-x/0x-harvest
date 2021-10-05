@@ -10,8 +10,6 @@ import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
 import { useState } from "react";
 import Link from "next/link";
 
-export const getServerSideProps = requireAuth;
-
 const Vacation: NextPage = () => {
   const router = useRouter();
   let year = moment().year();

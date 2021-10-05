@@ -2,14 +2,11 @@ import React from "react";
 import moment from "moment";
 import { Col, InputNumber, Row } from "antd";
 import type { NextPage } from "next";
-import { requireAuth } from "../lib/routeGuards";
 import {
   DEFAULT_VACATION_ALLOWANCE,
   getVacationAllowance,
   VACATION_ALLOWANCE_KEY,
 } from "../utils";
-
-export const getServerSideProps = requireAuth;
 
 const Settings: NextPage = () => {
   const thisYear = moment().year();
