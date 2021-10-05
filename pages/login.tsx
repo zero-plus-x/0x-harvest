@@ -7,11 +7,9 @@ export const getServerSideProps = forbidAuth;
 
 const Login: NextPage = () => {
   return (
-    <CommonLayout>
-      <Button onClick={() => window.location.replace("/api/oauth2")}>
-        Login via Harvest
-      </Button>
-    </CommonLayout>
+    <Button onClick={() => window.location.replace("/api/oauth2")}>
+      Login via Harvest
+    </Button>
   );
 };
 

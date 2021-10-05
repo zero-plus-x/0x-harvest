@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import moment from "moment";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import CommonLayout from "../components/layout/CommonLayout";
-import { Button, PageHeader, Skeleton, Statistic } from "antd";
+import { Button, PageHeader, Row, Skeleton, Statistic } from "antd";
 import { TimeEntry } from "../types";
 import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
@@ -29,7 +29,7 @@ const Vacation: NextPage = () => {
   );
 
   return (
-    <CommonLayout>
+    <>
       <PageHeader
         title={`Year ${year}`}
         breadcrumbRender={() => {
@@ -88,7 +88,7 @@ const Vacation: NextPage = () => {
       </PageHeader>
 
       <VacationsDays vacationEntries={vacationEntries} />
-    </CommonLayout>
+    </>
   );
 };
 

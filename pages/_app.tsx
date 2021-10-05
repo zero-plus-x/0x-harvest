@@ -41,13 +41,9 @@ function MyApp({ Component, pageProps }: AppProps) {
             fetch(resource, init).then((res) => res.json()),
         }}
       >
-        {loading ? (
-          <CommonLayout>
-            <Spin />
-          </CommonLayout>
-        ) : (
-          <Component {...pageProps} />
-        )}
+        <CommonLayout>
+          {loading ? <Spin /> : <Component {...pageProps} />}
+        </CommonLayout>
       </SWRConfig>
     </>
   );

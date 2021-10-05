@@ -22,38 +22,36 @@ const Settings: NextPage = () => {
   });
 
   return (
-    <CommonLayout>
-      <Row>
-        <Col>
-          Vacation allowance in years:
-          {years.map((year) => (
-            <div key={year}>
-              {year}:{" "}
-              <InputNumber
-                value={vacationAllowance[year]}
-                placeholder={DEFAULT_VACATION_ALLOWANCE.toString()}
-                min={0}
-                max={50}
-                onChange={(val) => {
-                  let newValue = { ...vacationAllowance };
-                  if (typeof val === "number") {
-                    newValue[year] = val;
-                  } else {
-                    delete newValue[year];
-                  }
-                  newValue = cleanupValues(newValue, years);
-                  localStorage.setItem(
-                    VACATION_ALLOWANCE_KEY,
-                    JSON.stringify(newValue)
-                  );
-                  setVacationAllowance(newValue);
-                }}
-              />
-            </div>
-          ))}
-        </Col>
-      </Row>
-    </CommonLayout>
+    <Row>
+      <Col>
+        Vacation allowance in years:
+        {years.map((year) => (
+          <div key={year}>
+            {year}:{" "}
+            <InputNumber
+              value={vacationAllowance[year]}
+              placeholder={DEFAULT_VACATION_ALLOWANCE.toString()}
+              min={0}
+              max={50}
+              onChange={(val) => {
+                let newValue = { ...vacationAllowance };
+                if (typeof val === "number") {
+                  newValue[year] = val;
+                } else {
+                  delete newValue[year];
+                }
+                newValue = cleanupValues(newValue, years);
+                localStorage.setItem(
+                  VACATION_ALLOWANCE_KEY,
+                  JSON.stringify(newValue)
+                );
+                setVacationAllowance(newValue);
+              }}
+            />
+          </div>
+        ))}
+      </Col>
+    </Row>
   );
 };
 

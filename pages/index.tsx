@@ -45,11 +45,7 @@ import { requireAuth } from "../lib/routeGuards";
 export const getServerSideProps = requireAuth;
 
 const Home: NextPage = () => {
-  return (
-    <CommonLayout>
-      <TimeEntries />
-    </CommonLayout>
-  );
+  return <TimeEntries />;
 };
 
 export default Home;
