@@ -8,6 +8,8 @@ import {
 } from "../../lib/harvestConfig";
 import { Account, Company } from "../../types";
 
+const isProd = process.env.NODE_ENV === "production";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -44,8 +46,7 @@ export default async function handler(
           maxAge: query.expires_in,
           path: "/",
           httpOnly: true,
-          // sameSite: true,
-          // secure: true,
+          secure: isProd,
         };
         setCookie({ res }, "HARVEST_ACCESS_TOKEN", query.access_token, config);
         setCookie({ res }, "HARVEST_ACCOUNT_ID", account.id + "", config);
