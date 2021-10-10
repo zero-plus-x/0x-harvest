@@ -15,10 +15,11 @@ import {
   Menu,
   PageHeader,
   Skeleton,
-  Space,
   Statistic,
   message,
   Tooltip,
+  Row,
+  Col,
 } from "antd";
 import { useSWRConfig } from "swr";
 import {
@@ -150,76 +151,70 @@ const TimeEntries = () => {
           ))
         }
       >
-        <Space size="large">
-          <Statistic
-            loading={!entries}
-            title="Entries missing a note"
-            value={entriesMissingNote}
-            prefix={
-              !entriesMissingNote &&
-              trackedHoursInMonth === hoursInMonth && <LikeOutlined />
-            }
-          />
-          <Statistic
-            loading={!entries}
-            title="Total tracked hours"
-            value={trackedHoursInMonth}
-            suffix={` / ${hoursInMonth}`}
-            prefix={trackedHoursInMonth === hoursInMonth && <LikeOutlined />}
-          />
-          <Statistic
-            loading={!entries}
-            title="Tracked hours for client"
-            value={clientHours}
-          />
-        </Space>
+        <Row>
+          <Col lg={4} sm={8} xs={12}>
+            <Statistic
+              loading={!entries}
+              title="Entries missing a note"
+              value={entriesMissingNote}
+              prefix={
+                !entriesMissingNote &&
+                trackedHoursInMonth === hoursInMonth && <LikeOutlined />
+              }
+            />
+          </Col>
+          <Col lg={4} sm={8} xs={12}>
+            <Statistic
+              loading={!entries}
+              title="Total tracked hours"
+              value={trackedHoursInMonth}
+              suffix={` / ${hoursInMonth}`}
+              prefix={trackedHoursInMonth === hoursInMonth && <LikeOutlined />}
+            />
+          </Col>
+          <Col lg={4} sm={8} xs={0}>
+            <Statistic
+              loading={!entries}
+              title="Tracked hours for client"
+              value={clientHours}
+            />
+          </Col>
+        </Row>
       </PageHeader>
       <div style={{ marginLeft: 20 }}>
         {entries ? (
           <>
             <br />
-            <div className="antd-table">
-              <div className="antd-table-container">
-                <div className="antd-table-content">
-                  <table>
-                    <tbody className="ant-table-tbody">
-                      {getDaysInMonthRange(
-                        currentDate.year(),
-                        currentDate.month()
-                      )
-                        .reverse()
-                        .map((day) => {
-                          const harvestDate =
-                            day.date.format(HARVEST_DATE_FORMAT);
-                          const dayEntries = entries.filter(
-                            (e) => e.spent_date === harvestDate
-                          );
-                          if (!dayEntries.length) {
-                            return (
-                              <TimeEntryRow
-                                day={day}
-                                key={harvestDate}
-                                showDate
-                                loadMonth={loadMonth}
-                                setEntries={setEntries}
-                              />
-                            );
-                          }
-                          return dayEntries.map((entry, entryIdx) => (
-                            <TimeEntryRow
-                              day={day}
-                              key={entry.id}
-                              entry={entry}
-                              showDate={!entryIdx}
-                              loadMonth={loadMonth}
-                              setEntries={setEntries}
-                            />
-                          ));
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+            <div>
+              {getDaysInMonthRange(currentDate.year(), currentDate.month())
+                .reverse()
+                .map((day) => {
+                  const harvestDate = day.date.format(HARVEST_DATE_FORMAT);
+                  const dayEntries = entries.filter(
+                    (e) => e.spent_date === harvestDate
+                  );
+                  if (!dayEntries.length) {
+                    return (
+                      <TimeEntryRow
+                        day={day}
+                        key={harvestDate}
+                        showDate
+                        loadMonth={loadMonth}
+                        setEntries={setEntries}
+                      />
+                    );
+                  }
+                  return dayEntries.map((entry, entryIdx) => (
+                    <TimeEntryRow
+                      day={day}
+                      key={entry.id}
+                      entry={entry}
+                      showDate={!entryIdx}
+                      loadMonth={loadMonth}
+                      setEntries={setEntries}
+                    />
+                  ));
+                })}
             </div>
           </>
         ) : (
@@ -254,23 +249,23 @@ const TimeEntryRow = ({
   ) => void;
 }) => {
   const [loading, setLoading] = useState(false);
-  const tdStyle = { padding: 3 };
   const primaryTask = usePrimaryTask();
   const specialTask = entry ? specialTasks[entry?.task.id] : undefined;
 
   return (
-    <tr className="ant-table-row" style={{ height: 35 }}>
-      <td
+    <Row style={{ height: 35 }}>
+      <Col
+        xl={2}
+        lg={4}
+        sm={5}
+        xs={6}
         style={{
-          ...tdStyle,
-          width: 150,
           fontWeight: day.date.isSame(new Date(), "date") ? "bold" : undefined,
         }}
-        className="ant-table-cell"
       >
         {showDate && day.date.format(HARVEST_DATE_FORMAT)}
-      </td>
-      <td style={{ ...tdStyle, textAlign: "center" }}>
+      </Col>
+      <Col xxl={3} xl={4} lg={5} sm={5} xs={4}>
         {(!specialTask || specialTask?.noteRequired) && (
           <Tooltip
             title={
@@ -281,13 +276,25 @@ const TimeEntryRow = ({
               </>
             }
           >
-            {specialTask?.displayName ?? entry?.task.name}
+            <div
+              style={{
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+              }}
+            >
+              {specialTask?.displayName ?? entry?.task.name}
+            </div>
           </Tooltip>
         )}
-      </td>
-      <td
-        style={{ ...tdStyle, width: 500, textAlign: "center" }}
-        className="ant-table-cell"
+      </Col>
+      <Col
+        xxl={13}
+        xl={12}
+        lg={9}
+        sm={9}
+        xs={14}
+        style={{ textAlign: "center" }}
       >
         {day.isBusinessDay && (specialTask?.noteRequired || !specialTask) ? (
           <TimeEntryInput
@@ -304,11 +311,8 @@ const TimeEntryRow = ({
         ) : (
           <i>weekend</i>
         )}
-      </td>
-      <td
-        style={{ ...tdStyle, width: 70, textAlign: "center" }}
-        className="ant-table-cell"
-      >
+      </Col>
+      <Col lg={5} sm={4} xs={0} style={{ textAlign: "center" }}>
         {entry?.hours && `${entry.hours} hours`}
         {!entry && day.date.isoWeekday() === 1 && primaryTask && (
           <Button
@@ -351,8 +355,8 @@ const TimeEntryRow = ({
             <PlusOutlined /> Work entries for this week
           </Button>
         )}
-      </td>
-      <td className="ant-table-cell" style={tdStyle}>
+      </Col>
+      <Col sm={1} xs={0}>
         {entry && (
           <Button
             danger
@@ -371,8 +375,8 @@ const TimeEntryRow = ({
             }}
           />
         )}
-      </td>
-    </tr>
+      </Col>
+    </Row>
   );
 };
 

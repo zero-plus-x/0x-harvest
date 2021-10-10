@@ -12,11 +12,11 @@ export default function CommonLayout({
       <Header />
       <Layout.Content>
         <Row>
-          <Col sm={2} xs={0}></Col>
-          <Col sm={20} xs={24} style={{ paddingTop: 20 }}>
+          <Col md={2} sm={1} xs={0}></Col>
+          <Col md={20} sm={22} xs={24} style={{ paddingTop: 20 }}>
             {children}
           </Col>
-          <Col sm={2} xs={0}></Col>
+          <Col md={2} sm={1} xs={0}></Col>
         </Row>
       </Layout.Content>
     </Layout>

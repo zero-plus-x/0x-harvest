@@ -12,13 +12,7 @@ export default function Header() {
   return (
     <Layout.Header className="header">
       <div className="logo">
-        <Image
-          className="logo-image"
-          src="/0x_logo.svg"
-          height={30}
-          width={30}
-          alt="Logo"
-        />
+        <Image src="/0x_logo.svg" height={30} width={30} alt="Logo" />
       </div>
       <style jsx>{`
         .logo {
