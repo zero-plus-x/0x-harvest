@@ -73,12 +73,6 @@ const TimeEntries = () => {
 
   const loadMonth = () => mutate(cacheKey);
 
-  const entriesMissingNote = entries?.filter(
-    (entry) =>
-      !entry.notes &&
-      (specialTasks[entry.task.id]?.noteRequired ||
-        !specialTasks[entry.task.id])
-  ).length;
   const hoursInMonth =
     weekdaysInMonth(currentDate.year(), currentDate.month()) * 8;
   const trackedHoursInMonth = entries?.reduce(
@@ -155,24 +149,13 @@ const TimeEntries = () => {
           <Col lg={4} sm={8} xs={12}>
             <Statistic
               loading={!entries}
-              title="Entries missing a note"
-              value={entriesMissingNote}
-              prefix={
-                !entriesMissingNote &&
-                trackedHoursInMonth === hoursInMonth && <LikeOutlined />
-              }
-            />
-          </Col>
-          <Col lg={4} sm={8} xs={12}>
-            <Statistic
-              loading={!entries}
               title="Total tracked hours"
               value={trackedHoursInMonth}
               suffix={` / ${hoursInMonth}`}
               prefix={trackedHoursInMonth === hoursInMonth && <LikeOutlined />}
             />
           </Col>
-          <Col lg={4} sm={8} xs={0}>
+          <Col lg={4} sm={8} xs={12}>
             <Statistic
               loading={!entries}
               title="Tracked hours for client"
