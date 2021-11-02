@@ -53,7 +53,7 @@ const TimeEntries = () => {
 
   const [currentYear, setCurrentYear] = useState(moment().year());
   const [currentMonth, setCurrentMonth] = useState(moment().month());
-  const primaryTask = usePrimaryTask();
+
   const currentDate = useMemo(
     () => moment(new Date(currentYear, currentMonth, 1)),
     [currentYear, currentMonth]
@@ -73,23 +73,6 @@ const TimeEntries = () => {
   };
 
   const loadMonth = () => mutate(cacheKey);
-
-  const hoursInMonth =
-    weekdaysInMonth(currentDate.year(), currentDate.month()) * 8;
-  const trackedHoursInMonth = entries?.reduce(
-    (acc, entry) => acc + entry.hours,
-    0
-  );
-  const clientHours = entries
-    ?.filter(
-      (e) =>
-        // note that primaryTask is derived based on the most commonly-used task in the last 30 days
-        // it would be safer to let the user select their primary task in the UI
-        e.task.id === primaryTask?.taskId &&
-        // client task is not part of the default absence/0+x internal projects
-        !projects[e.project.id]
-    )
-    .reduce((acc, entry) => acc + entry.hours, 0);
 
   return (
     <div>
@@ -147,23 +130,11 @@ const TimeEntries = () => {
         }
       >
         <Row>
-          <Col lg={4} sm={8} xs={12}>
-            <Statistic
-              loading={!entries}
-              title="Total tracked hours"
-              value={trackedHoursInMonth}
-              suffix={` / ${hoursInMonth}`}
-              prefix={
-                (trackedHoursInMonth || 0) >= hoursInMonth && <LikeOutlined />
-              }
-            />
+          <Col xl={4} lg={5} sm={8} xs={12}>
+            <LoggedHoursStatistic date={currentDate} entries={entries} />
           </Col>
-          <Col lg={4} sm={8} xs={12}>
-            <Statistic
-              loading={!entries}
-              title="Tracked hours for client"
-              value={clientHours}
-            />
+          <Col xl={6} lg={6} sm={12} xs={12}>
+            <ClientHoursStatistic entries={entries} />
           </Col>
         </Row>
       </PageHeader>
@@ -216,6 +187,55 @@ const TimeEntries = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const ClientHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
+  const primaryTask = usePrimaryTask();
+  if (!primaryTask) {
+    return null;
+  }
+  const clientHours = entries
+    ?.filter(
+      (e) =>
+        // note that primaryTask is derived based on the most commonly-used task in the last 30 days
+        // it would be safer to let the user select their primary task in the UI
+        e.task.id === primaryTask?.taskId &&
+        // client task is not part of the default absence/0+x internal projects
+        !projects[e.project.id]
+    )
+    .reduce((acc, entry) => acc + entry.hours, 0);
+
+  return (
+    <Statistic
+      loading={!entries}
+      title={`Logged hours for ${primaryTask.projectName}`}
+      value={clientHours}
+    />
+  );
+};
+
+const LoggedHoursStatistic = ({
+  date,
+  entries,
+}: {
+  date: moment.Moment;
+  entries?: TimeEntry[];
+}) => {
+  const hoursInMonth = weekdaysInMonth(date.year(), date.month()) * 8;
+  const trackedHoursInMonth = entries?.reduce(
+    (acc, entry) => acc + entry.hours,
+    0
+  );
+
+  return (
+    <Statistic
+      loading={!entries}
+      title="Total logged hours"
+      value={trackedHoursInMonth}
+      suffix={` / ${hoursInMonth}`}
+      prefix={(trackedHoursInMonth || 0) >= hoursInMonth && <LikeOutlined />}
+    />
   );
 };
 

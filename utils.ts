@@ -31,7 +31,7 @@ export const getDaysInMonthRange = (year: number, month: number): Day[] => {
  * Returns the most-used task during the last 30 days. Defaults to the first task returned for the user if there is no history.
  */
 export const usePrimaryTask = ():
-  | { projectId: number; taskId: number; taskName: string }
+  | { projectId: number; projectName: string; taskId: number; taskName: string }
   | undefined => {
   const start = moment().subtract(30, "day");
   const end = moment();
@@ -40,10 +40,15 @@ export const usePrimaryTask = ():
   const { data: entries } = useTimeEntries(start, end);
 
   if (!entries?.length) {
-    const projectId = projectAssignments?.[0].project.id;
+    const project = projectAssignments?.[0].project;
     const task = projectAssignments?.[0].task_assignments[0]?.task;
-    if (projectId && task) {
-      return { projectId, taskId: task.id, taskName: task.name };
+    if (project && task) {
+      return {
+        projectId: project.id,
+        projectName: project.name,
+        taskId: task.id,
+        taskName: task.name,
+      };
     }
     return undefined;
   }
@@ -63,6 +68,7 @@ export const usePrimaryTask = ():
   return mostCommonTask
     ? {
         projectId: mostCommonTask.project.id,
+        projectName: mostCommonTask.project.name,
         taskId: mostCommonTask.task.id,
         taskName: mostCommonTask.task.name,
       }
