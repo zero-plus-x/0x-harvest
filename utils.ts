@@ -84,3 +84,9 @@ export const getVacationAllowance = (): Record<number, number> => {
   }
   return {};
 };
+
+/**
+ * Most of users' work tasks are called the same, but have different IDs. Have to match by name.
+ */
+export const isSoftwareDevTask = (taskName?: string) =>
+  taskName === "Software Development";

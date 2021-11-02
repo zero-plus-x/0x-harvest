@@ -25,6 +25,7 @@ import { useSWRConfig } from "swr";
 import {
   Day,
   getDaysInMonthRange,
+  isSoftwareDevTask,
   usePrimaryTask,
   weekdaysInMonth,
 } from "../utils";
@@ -152,7 +153,9 @@ const TimeEntries = () => {
               title="Total tracked hours"
               value={trackedHoursInMonth}
               suffix={` / ${hoursInMonth}`}
-              prefix={trackedHoursInMonth === hoursInMonth && <LikeOutlined />}
+              prefix={
+                (trackedHoursInMonth || 0) >= hoursInMonth && <LikeOutlined />
+              }
             />
           </Col>
           <Col lg={4} sm={8} xs={12}>
@@ -253,9 +256,13 @@ const TimeEntryRow = ({
           <Tooltip
             title={
               <>
-                <p>Project ID: {entry?.project.id}</p>
-                <p>Task ID: {entry?.task.id}</p>
-                <p>Task Name: {entry?.task.name}</p>
+                Project ID: {entry?.project.id}
+                <br />
+                Project Name: {entry?.project.name}
+                <br />
+                Task ID: {entry?.task.id}
+                <br />
+                Task Name: {entry?.task.name}
               </>
             }
           >
@@ -266,7 +273,12 @@ const TimeEntryRow = ({
                 overflow: "hidden",
               }}
             >
-              {specialTask?.displayName ?? entry?.task.name}
+              {specialTask?.displayName ??
+                (isSoftwareDevTask(entry?.task.name) ? (
+                  <>Work ({entry?.project.name})</>
+                ) : (
+                  entry?.task.name
+                ))}
             </div>
           </Tooltip>
         )}
@@ -427,7 +439,12 @@ const TimeEntryInput = ({
                     await createEntry(p.project.id, t.task.id, FALLBACK_HOURS)
                   }
                 >
-                  {t.task.name} {override?.emoji}
+                  {t.task.name} {override?.emoji}{" "}
+                  {primaryTask?.taskId === t.task.id ? (
+                    <>
+                      (current <i>work</i>)
+                    </>
+                  ) : null}
                 </Menu.Item>
               );
             })}
@@ -452,7 +469,7 @@ const TimeEntryInput = ({
           }}
         >
           <PlusOutlined /> {FALLBACK_HOURS} hour{" "}
-          {primaryTask?.taskName === "Software Development"
+          {isSoftwareDevTask(primaryTask?.taskName)
             ? "work"
             : primaryTask?.taskName}{" "}
         </Dropdown.Button>
@@ -466,6 +483,7 @@ const TimeEntryInput = ({
         disabled={loading}
         value={notes}
         onChange={(e) => setNotes(e.currentTarget.value)}
+        placeholder="Notes"
         onBlur={async () => {
           if (notes === entry.notes) {
             return;
