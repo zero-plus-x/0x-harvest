@@ -23,39 +23,44 @@ export const projects: Record<number, string> = {
 
 export const specialTasks: { [taskId: number]: SpecialTask } = {
   [PAID_VACATION_TASK_ID]: {
-    // displayName: "Paid vacation",
+    // "Paid vacation"
     noteRequired: false,
     emoji: "🏖️",
   },
   8114249: {
-    // displayName: "Public holiday",
+    // "Public holiday"
     noteRequired: false,
     emoji: "🎅",
   },
   6616441: {
-    // displayName: "Conference day",
+    // "Conference day"
     emoji: "📚",
     noteRequired: false,
   },
   6646904: {
-    // displayName: "Sick day",
+    // "Sick day"
     emoji: "🤢",
     noteRequired: false,
   },
   6646908: {
-    // displayName: "Unpaid vacation",
+    // "Unpaid vacation"
     emoji: "⏸",
     noteRequired: false,
   },
   6646905: {
-    // displayName: "VAB",
+    // "VAB"
     emoji: "👶",
     noteRequired: false,
   },
   6615741: {
-    // displayName: "Internal hours",
+    // "Internal hours"
     emoji: "💻",
     noteRequired: true,
+  },
+  8918713: {
+    // "Parental absence"
+    emoji: "👨‍👩‍👦",
+    noteRequired: false,
   },
 };
 
