@@ -373,22 +373,24 @@ const TimeEntryRow = ({
       </Col>
       <Col sm={1} xs={0}>
         {entry && (
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={async () => {
-              setEntries((entries) =>
-                entries?.filter((e) => e.id !== entry.id)
-              );
-              const response = await deleteTimeEntry(entry.id);
-              if (response.status === 200) {
-                message.success("Entry deleted!");
-              } else {
-                message.error("Something went wrong while deleting entry.");
-                await loadMonth();
-              }
-            }}
-          />
+          <>
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              onClick={async () => {
+                setEntries((entries) =>
+                  entries?.filter((e) => e.id !== entry.id)
+                );
+                const response = await deleteTimeEntry(entry.id);
+                if (response.status === 200) {
+                  message.success("Entry deleted!");
+                } else {
+                  message.error("Something went wrong while deleting entry.");
+                  await loadMonth();
+                }
+              }}
+            />
+          </>
         )}
       </Col>
     </Row>
@@ -410,9 +412,6 @@ const TimeEntryInput = ({
 }) => {
   const [notes, setNotes] = useState(entry?.notes || "");
   const [loading, setLoading] = useState(false);
-
-  const { data: projectAssignments } = useProjectAssignments();
-  const primaryTask = usePrimaryTask();
 
   const createEntry = async (
     projectId: number,
@@ -445,56 +444,7 @@ const TimeEntryInput = ({
   };
 
   if (!entry) {
-    const menu = (
-      <Menu>
-        {projectAssignments?.map((p) => (
-          <Menu.ItemGroup key={p.project.id} title={p.project.name}>
-            {p.task_assignments.map((t) => {
-              const override = specialTasks[t.task.id];
-              return (
-                <Menu.Item
-                  key={t.task.id}
-                  icon={<PlusOutlined />}
-                  onClick={async () =>
-                    await createEntry(p.project.id, t.task.id, FALLBACK_HOURS)
-                  }
-                >
-                  {t.task.name} {override?.emoji}{" "}
-                  {primaryTask?.taskId === t.task.id ? (
-                    <>
-                      (current <i>work</i>)
-                    </>
-                  ) : null}
-                </Menu.Item>
-              );
-            })}
-          </Menu.ItemGroup>
-        ))}
-      </Menu>
-    );
-
-    return (
-      <>
-        <Dropdown.Button
-          overlay={menu}
-          disabled={loading}
-          onClick={async () => {
-            if (primaryTask) {
-              await createEntry(
-                primaryTask.projectId,
-                primaryTask.taskId,
-                FALLBACK_HOURS
-              );
-            }
-          }}
-        >
-          <PlusOutlined /> {FALLBACK_HOURS} hour{" "}
-          {isSoftwareDevTask(primaryTask?.taskName)
-            ? "work"
-            : primaryTask?.taskName}{" "}
-        </Dropdown.Button>
-      </>
-    );
+    return <CreateEntryButton createEntry={createEntry} loading={loading} />;
   }
 
   return (
@@ -531,5 +481,69 @@ const TimeEntryInput = ({
         }}
       />
     </>
+  );
+};
+
+const CreateEntryButton = ({
+  loading,
+  createEntry,
+}: {
+  loading: boolean;
+  createEntry: (
+    projectId: number,
+    taskId: number,
+    hours: number
+  ) => Promise<void>;
+}) => {
+  const primaryTask = usePrimaryTask();
+  const { data: projectAssignments } = useProjectAssignments();
+
+  const menu = (
+    <Menu>
+      {projectAssignments?.map((p) => (
+        <Menu.ItemGroup key={p.project.id} title={p.project.name}>
+          {p.task_assignments.map((t) => {
+            const override = specialTasks[t.task.id];
+            return (
+              <Menu.Item
+                key={t.task.id}
+                icon={<PlusOutlined />}
+                onClick={async () =>
+                  await createEntry(p.project.id, t.task.id, FALLBACK_HOURS)
+                }
+              >
+                {t.task.name} {override?.emoji}{" "}
+                {primaryTask?.taskId === t.task.id ? (
+                  <>
+                    (current <i>work</i>)
+                  </>
+                ) : null}
+              </Menu.Item>
+            );
+          })}
+        </Menu.ItemGroup>
+      ))}
+    </Menu>
+  );
+
+  return (
+    <Dropdown.Button
+      overlay={menu}
+      disabled={loading}
+      onClick={async () => {
+        if (primaryTask) {
+          await createEntry(
+            primaryTask.projectId,
+            primaryTask.taskId,
+            FALLBACK_HOURS
+          );
+        }
+      }}
+    >
+      <PlusOutlined /> {FALLBACK_HOURS} hour{" "}
+      {isSoftwareDevTask(primaryTask?.taskName)
+        ? "work"
+        : primaryTask?.taskName}
+    </Dropdown.Button>
   );
 };
