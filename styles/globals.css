@@ -14,3 +14,33 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.time-entry-row:hover {
+  background: #e6f7ff;
+}
+
+.time-entry-row > div {
+  line-height: 36px;
+}
+
+.time-entry-row-weekend {
+  opacity: 0.5;
+}
+
+.buttons {
+  display: none;
+}
+
+.time-entry-row:hover .buttons {
+  display: inline;
+}
+
+@media (pointer: coarse) {
+  button {
+    display: inline;
+  }
+}
+
+.delete-button:hover {
+  background: #ffcccd !important;
+}

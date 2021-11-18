@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { NextPage } from "next";
 import moment from "moment";
+import classnames from "classnames";
 import {
   DeleteOutlined,
   LeftOutlined,
@@ -258,8 +259,16 @@ const TimeEntryRow = ({
   const primaryTask = usePrimaryTask();
   const specialTask = entry ? specialTasks[entry?.task.id] : undefined;
 
+  const rowHeight = 36;
+
   return (
-    <Row style={{ height: 35 }}>
+    <Row
+      style={{ height: rowHeight }}
+      className={classnames(
+        "time-entry-row",
+        !day.isBusinessDay && "time-entry-row-weekend"
+      )}
+    >
       <Col
         xl={2}
         lg={4}
@@ -373,9 +382,10 @@ const TimeEntryRow = ({
       </Col>
       <Col sm={1} xs={0}>
         {entry && (
-          <>
+          <span className="buttons">
             <Button
               danger
+              className="delete-button"
               icon={<DeleteOutlined />}
               onClick={async () => {
                 setEntries((entries) =>
@@ -390,7 +400,7 @@ const TimeEntryRow = ({
                 }
               }}
             />
-          </>
+          </span>
         )}
       </Col>
     </Row>
