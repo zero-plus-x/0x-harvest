@@ -116,8 +116,8 @@ const TimeEntries = () => {
           );
         }}
         subTitle={
-          moment().year() !== currentYear ||
-          (moment().month() !== currentMonth && (
+          (moment().year() !== currentYear ||
+            moment().month() !== currentMonth) && (
             <Button
               type="link"
               onClick={() => {
@@ -127,7 +127,7 @@ const TimeEntries = () => {
             >
               jump to current month
             </Button>
-          ))
+          )
         }
       >
         <Row>
