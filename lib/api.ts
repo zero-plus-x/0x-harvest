@@ -136,23 +136,14 @@ export const logout = () => {
   return axios.get(`/api/logout`);
 };
 
-export const useUser = (shouldFetch?: boolean) => {
+export const useUser = () => {
   const { data, error } = useSWR<User>(
-    !shouldFetch ? `${HARVEST_API_URL}/users/me` : null
+    `${HARVEST_API_URL}/users/me`,
+    (resource, init) => fetch(resource, init).then((res) => res.json())
   );
   return {
     data,
     isLoading: !error && !data,
     isError: error,
-  };
-};
-
-export const useIsLoggedIn = () => {
-  const { data, isLoading, isError } = useUser();
-
-  return {
-    isLoggedIn: !!data?.id,
-    isLoading,
-    isError,
   };
 };
