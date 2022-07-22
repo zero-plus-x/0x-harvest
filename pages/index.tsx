@@ -43,10 +43,10 @@ import {
   useProjectAssignments,
   useTimeEntries,
 } from "../lib/api";
-import TableLoader from "./components/TableLoader";
-import TaskHoursStatistic from "./components/TaskHoursStatistic";
-import TaskName from "./components/TaskName";
-import FillEntriesWeekButton from "./components/FillEntriesWeekButton";
+import TableLoader from "../components/entries/TableLoader";
+import TaskHoursStatistic from "../components/entries/TaskHoursStatistic";
+import TaskName from "../components/entries/TaskName";
+import FillEntriesWeekButton from "../components/entries/FillEntriesWeekButton";
 
 const Home: NextPage = () => {
   return <TimeEntries />;
