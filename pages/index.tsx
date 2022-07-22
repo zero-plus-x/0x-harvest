@@ -15,13 +15,13 @@ import {
   Input,
   Menu,
   PageHeader,
-  Skeleton,
   Statistic,
   message,
   Tooltip,
   Row,
   Col,
   InputNumber,
+  Space,
 } from "antd";
 import { useSWRConfig } from "swr";
 import {
@@ -37,7 +37,6 @@ import {
   deleteTimeEntry,
   FALLBACK_HOURS,
   HARVEST_DATE_FORMAT,
-  projects,
   specialTasks,
   updateTimeEntryHours,
   updateTimeEntryNote,
@@ -165,6 +164,7 @@ const TimeEntries = () => {
                         showDate
                         loadMonth={loadMonth}
                         setEntries={setEntries}
+                        dayGroup={!day.isBusinessDay}
                       />
                     );
                   }
@@ -176,6 +176,7 @@ const TimeEntries = () => {
                       showDate={!entryIdx}
                       loadMonth={loadMonth}
                       setEntries={setEntries}
+                      dayGroup={entryIdx > 0 || !day.isBusinessDay}
                     />
                   ));
                 })}
@@ -219,6 +220,7 @@ const TimeEntryRow = ({
   showDate,
   loadMonth,
   setEntries,
+  dayGroup,
 }: {
   day: Day;
   entry?: TimeEntry;
@@ -227,6 +229,7 @@ const TimeEntryRow = ({
   setEntries: (
     fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
   ) => void;
+  dayGroup?: boolean;
 }) => {
   const [loading, setLoading] = useState(false);
   const primaryTask = usePrimaryTask();
@@ -235,7 +238,7 @@ const TimeEntryRow = ({
 
   return (
     <Row
-      style={{ height: rowHeight }}
+      style={{ height: rowHeight, marginTop: dayGroup ? 0 : 5 }}
       className={classnames(
         "time-entry-row",
         !day.isBusinessDay && "time-entry-row-weekend"
@@ -278,7 +281,7 @@ const TimeEntryRow = ({
         </Tooltip>
       </Col>
       <Col
-        xxl={13}
+        xxl={12}
         xl={12}
         lg={9}
         sm={9}
@@ -286,12 +289,19 @@ const TimeEntryRow = ({
         style={{ textAlign: "center" }}
       >
         {day.isBusinessDay ? (
-          <EntryNoteInput
-            day={day}
-            entry={entry}
-            loadMonth={loadMonth}
-            setEntries={setEntries}
-          />
+          entry ? (
+            <EntryNoteInput
+              entry={entry}
+              loadMonth={loadMonth}
+              setEntries={setEntries}
+            />
+          ) : (
+            <CreateEntryButton
+              day={day}
+              loadMonth={loadMonth}
+              setEntries={setEntries}
+            />
+          )
         ) : (
           <i>weekend</i>
         )}
@@ -324,26 +334,34 @@ const TimeEntryRow = ({
           />
         )}
       </Col>
-      <Col sm={1} xs={0}>
+      <Col sm={2} xs={0}>
         {entry && (
           <span className="buttons">
-            <Button
-              danger
-              className="delete-button"
-              icon={<DeleteOutlined />}
-              onClick={async () => {
-                setEntries((entries) =>
-                  entries?.filter((e) => e.id !== entry.id)
-                );
-                const response = await deleteTimeEntry(entry.id);
-                if (response.status === 200) {
-                  message.success("Entry deleted!");
-                } else {
-                  message.error("Something went wrong while deleting entry.");
-                  await loadMonth();
-                }
-              }}
-            />
+            <Space>
+              <Button
+                danger
+                className="delete-button"
+                icon={<DeleteOutlined />}
+                onClick={async () => {
+                  setEntries((entries) =>
+                    entries?.filter((e) => e.id !== entry.id)
+                  );
+                  const response = await deleteTimeEntry(entry.id);
+                  if (response.status === 200) {
+                    message.success("Entry deleted!");
+                  } else {
+                    message.error("Something went wrong while deleting entry.");
+                    await loadMonth();
+                  }
+                }}
+              />
+              <CreateEntryButton
+                day={day}
+                loadMonth={loadMonth}
+                setEntries={setEntries}
+                type="small"
+              />
+            </Space>
           </span>
         )}
       </Col>
@@ -395,13 +413,11 @@ const EntryTimeInput = ({
 };
 
 const EntryNoteInput = ({
-  day,
   entry,
   loadMonth,
   setEntries,
 }: {
-  day: Day;
-  entry?: TimeEntry;
+  entry: TimeEntry;
   loadMonth: () => Promise<void>;
   setEntries: (
     fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
@@ -409,40 +425,6 @@ const EntryNoteInput = ({
 }) => {
   const [notes, setNotes] = useState(entry?.notes || "");
   const [loading, setLoading] = useState(false);
-
-  const createEntry = async (
-    projectId: number,
-    taskId: number,
-    hours?: number
-  ) => {
-    setLoading(true);
-    const response = await createTimeEntry(
-      day.date.format(HARVEST_DATE_FORMAT),
-      projectId,
-      taskId,
-      hours
-    );
-    setLoading(false);
-    if (response.status === 201) {
-      message.success("New entry created!");
-
-      setEntries((prevEntries) => {
-        if (!prevEntries) {
-          return prevEntries;
-        }
-        return [...prevEntries, response.data].sort((a, b) =>
-          b.spent_date.localeCompare(a.spent_date)
-        );
-      });
-    } else {
-      message.error("Something went wrong while creating entry.");
-      await loadMonth();
-    }
-  };
-
-  if (!entry) {
-    return <CreateEntryButton createEntry={createEntry} loading={loading} />;
-  }
 
   return (
     <>
@@ -482,18 +464,52 @@ const EntryNoteInput = ({
 };
 
 const CreateEntryButton = ({
-  loading,
-  createEntry,
+  day,
+  loadMonth,
+  setEntries,
+  type,
 }: {
-  loading: boolean;
-  createEntry: (
-    projectId: number,
-    taskId: number,
-    hours: number
-  ) => Promise<void>;
+  day: Day;
+  loadMonth: () => Promise<void>;
+  setEntries: (
+    fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
+  ) => void;
+  type?: "regular" | "small";
 }) => {
+  const [loading, setLoading] = useState(false);
+
   const primaryTask = usePrimaryTask();
   const { data: projectAssignments } = useProjectAssignments();
+
+  const createEntry = async (
+    projectId: number,
+    taskId: number,
+    hours?: number
+  ) => {
+    setLoading(true);
+    const response = await createTimeEntry(
+      day.date.format(HARVEST_DATE_FORMAT),
+      projectId,
+      taskId,
+      hours
+    );
+    setLoading(false);
+    if (response.status === 201) {
+      message.success("New entry created!");
+
+      setEntries((prevEntries) => {
+        if (!prevEntries) {
+          return prevEntries;
+        }
+        return [...prevEntries, response.data].sort((a, b) =>
+          b.spent_date.localeCompare(a.spent_date)
+        );
+      });
+    } else {
+      message.error("Something went wrong while creating entry.");
+      await loadMonth();
+    }
+  };
 
   const menu = (
     <Menu
@@ -522,6 +538,15 @@ const CreateEntryButton = ({
     />
   );
 
+  if (type === "small") {
+    return (
+      <Dropdown overlay={menu}>
+        <Button>
+          <PlusOutlined />
+        </Button>
+      </Dropdown>
+    );
+  }
   return (
     <Dropdown.Button
       overlay={menu}
