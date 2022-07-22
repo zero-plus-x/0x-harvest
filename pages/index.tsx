@@ -79,7 +79,10 @@ const TimeEntries = () => {
   };
 
   const loadMonth = () => mutate(cacheKey);
-
+  const dayList = getDaysInMonthRange(
+    currentDate.year(),
+    currentDate.month()
+  ).reverse();
   return (
     <div>
       <PageHeader
@@ -149,37 +152,42 @@ const TimeEntries = () => {
           <>
             <br />
             <div>
-              {getDaysInMonthRange(currentDate.year(), currentDate.month())
-                .reverse()
-                .map((day) => {
-                  const harvestDate = day.date.format(HARVEST_DATE_FORMAT);
-                  const dayEntries = entries.filter(
-                    (e) => e.spent_date === harvestDate
-                  );
-                  if (!dayEntries.length) {
-                    return (
-                      <TimeEntryRow
-                        day={day}
-                        key={harvestDate}
-                        showDate
-                        loadMonth={loadMonth}
-                        setEntries={setEntries}
-                        dayGroup={!day.isBusinessDay}
-                      />
-                    );
-                  }
-                  return dayEntries.map((entry, entryIdx) => (
+              {dayList.map((day, dayIdx) => {
+                const harvestDate = day.date.format(HARVEST_DATE_FORMAT);
+                const dayEntries = entries.filter(
+                  (e) => e.spent_date === harvestDate
+                );
+                if (!dayEntries.length) {
+                  return (
                     <TimeEntryRow
                       day={day}
-                      key={entry.id}
-                      entry={entry}
-                      showDate={!entryIdx}
+                      key={harvestDate}
+                      showDate
                       loadMonth={loadMonth}
                       setEntries={setEntries}
-                      dayGroup={entryIdx > 0 || !day.isBusinessDay}
                     />
-                  ));
-                })}
+                  );
+                }
+                return (
+                  <div
+                    key={harvestDate}
+                    style={{
+                      marginTop: dayList[dayIdx - 1]?.isBusinessDay ? 6 : 0,
+                    }}
+                  >
+                    {dayEntries.map((entry, entryIdx) => (
+                      <TimeEntryRow
+                        day={day}
+                        key={entryIdx}
+                        entry={entry}
+                        showDate={!entryIdx}
+                        loadMonth={loadMonth}
+                        setEntries={setEntries}
+                      />
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           </>
         ) : (
@@ -220,7 +228,6 @@ const TimeEntryRow = ({
   showDate,
   loadMonth,
   setEntries,
-  dayGroup,
 }: {
   day: Day;
   entry?: TimeEntry;
@@ -229,7 +236,6 @@ const TimeEntryRow = ({
   setEntries: (
     fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
   ) => void;
-  dayGroup?: boolean;
 }) => {
   const [loading, setLoading] = useState(false);
   const primaryTask = usePrimaryTask();
@@ -238,7 +244,7 @@ const TimeEntryRow = ({
 
   return (
     <Row
-      style={{ height: rowHeight, marginTop: dayGroup ? 0 : 5 }}
+      style={{ height: rowHeight }}
       className={classnames(
         "time-entry-row",
         !day.isBusinessDay && "time-entry-row-weekend"
