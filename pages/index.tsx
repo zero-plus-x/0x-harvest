@@ -160,7 +160,7 @@ const TimeEntries = () => {
 
                 const isMonday = day.date.isoWeekday() === 1;
                 const isFriday = day.date.isoWeekday() === 5;
-                const marginSize = 8;
+                const marginSize = 6;
                 const style = isMonday
                   ? { marginTop: marginSize }
                   : isFriday
