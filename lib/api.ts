@@ -7,7 +7,7 @@ const HARVEST_API_URL = "/api/harvest";
 
 type SpecialTask = {
   displayName?: string;
-  noteRequired: boolean;
+  noteRequired?: boolean;
   emoji?: string;
   defaultHours?: number;
 };
@@ -24,43 +24,35 @@ export const projects: Record<number, string> = {
 export const specialTasks: { [taskId: number]: SpecialTask } = {
   [PAID_VACATION_TASK_ID]: {
     // "Paid vacation"
-    noteRequired: false,
     emoji: "🏖️",
   },
   8114249: {
     // "Public holiday"
-    noteRequired: false,
     emoji: "🎅",
   },
   6616441: {
     // "Conference day"
     emoji: "📚",
-    noteRequired: false,
   },
   6646904: {
     // "Sick day"
     emoji: "🤢",
-    noteRequired: false,
   },
   6646908: {
     // "Unpaid vacation"
     emoji: "⏸",
-    noteRequired: false,
   },
   6646905: {
     // "VAB"
     emoji: "👶",
-    noteRequired: false,
   },
   6615741: {
     // "Internal hours"
     emoji: "💻",
-    noteRequired: true,
   },
   8918713: {
     // "Parental absence"
     emoji: "👨‍👩‍👦",
-    noteRequired: false,
   },
 };
 

@@ -1,5 +1,7 @@
 import moment from "moment";
 import { useProjectAssignments, useTimeEntries } from "./lib/api";
+import { userSettingsState } from "./stores/UserSettingsStore";
+import { TaskWithProject } from "./types";
 
 export const VACATION_ALLOWANCE_KEY = "vacationAllowance";
 export const DEFAULT_VACATION_ALLOWANCE = 25;
@@ -30,15 +32,30 @@ export const getDaysInMonthRange = (year: number, month: number): Day[] => {
 /**
  * Returns the most-used task during the last 30 days. Defaults to the first task returned for the user if there is no history.
  */
-export const usePrimaryTask = ():
-  | { projectId: number; projectName: string; taskId: number; taskName: string }
-  | undefined => {
+export const usePrimaryTask = (): TaskWithProject | undefined => {
   const start = moment().subtract(30, "day");
   const end = moment();
 
   const { data: projectAssignments } = useProjectAssignments();
   const { data: entries } = useTimeEntries(start, end);
-
+  const primaryTaskIdUserSetting = userSettingsState.primaryTaskId;
+  if (primaryTaskIdUserSetting) {
+    const projectAssignment = projectAssignments?.find((p) =>
+      p.task_assignments.find((p) => p.task.id === primaryTaskIdUserSetting)
+    );
+    if (projectAssignment) {
+      const task = projectAssignment.task_assignments.find(
+        (t) => t.task.id === primaryTaskIdUserSetting
+      )!.task;
+      const project = projectAssignment.project;
+      return {
+        projectId: project.id,
+        projectName: project.name,
+        taskId: task.id,
+        taskName: task.name,
+      };
+    }
+  }
   if (!entries?.length) {
     const project = projectAssignments?.[0].project;
     const task = projectAssignments?.[0].task_assignments[0]?.task;

@@ -45,3 +45,10 @@ export type ProjectAssignment = {
   project: Project;
   task_assignments: TaskAssignment[];
 };
+
+export type TaskWithProject = {
+  projectId: number;
+  projectName: string;
+  taskId: number;
+  taskName: string;
+};

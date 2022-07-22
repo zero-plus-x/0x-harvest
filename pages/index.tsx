@@ -42,6 +42,10 @@ import {
   useProjectAssignments,
   useTimeEntries,
 } from "../lib/api";
+import { TableLoader } from "./components/TableLoader";
+import { TaskHoursStatistic } from "./components/TaskHoursStatistic";
+import { TaskName } from "./components/TaskName";
+import { FillEntriesWeekButton } from "./components/FillEntriesWeekButton";
 
 const Home: NextPage = () => {
   return <TimeEntries />;
@@ -135,7 +139,7 @@ const TimeEntries = () => {
             <LoggedHoursStatistic date={currentDate} entries={entries} />
           </Col>
           <Col xl={6} lg={6} sm={12} xs={12}>
-            <ClientHoursStatistic entries={entries} />
+            <TaskHoursStatistic entries={entries} />
           </Col>
         </Row>
       </PageHeader>
@@ -176,43 +180,10 @@ const TimeEntries = () => {
             </div>
           </>
         ) : (
-          <>
-            <Skeleton active />
-            <Skeleton active />
-            <Skeleton active />
-            <Skeleton active />
-            <Skeleton active />
-            <Skeleton active />
-            <Skeleton active />
-          </>
+          <TableLoader />
         )}
       </div>
     </div>
-  );
-};
-
-const ClientHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
-  const primaryTask = usePrimaryTask();
-  if (!primaryTask) {
-    return null;
-  }
-  const clientHours = entries
-    ?.filter(
-      (e) =>
-        // note that primaryTask is derived based on the most commonly-used task in the last 30 days
-        // it would be safer to let the user select their primary task in the UI
-        e.task.id === primaryTask?.taskId &&
-        // client task is not part of the default absence/0+x internal projects
-        !projects[e.project.id]
-    )
-    .reduce((acc, entry) => acc + entry.hours, 0);
-
-  return (
-    <Statistic
-      loading={!entries}
-      title={`Logged hours for ${primaryTask.projectName}`}
-      value={clientHours}
-    />
   );
 };
 
@@ -257,7 +228,6 @@ const TimeEntryRow = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const primaryTask = usePrimaryTask();
-  const specialTask = entry ? specialTasks[entry?.task.id] : undefined;
 
   const rowHeight = 36;
 
@@ -281,36 +251,29 @@ const TimeEntryRow = ({
         {showDate && day.date.format(HARVEST_DATE_FORMAT)}
       </Col>
       <Col xxl={3} xl={4} lg={5} sm={5} xs={4}>
-        {(!specialTask || specialTask?.noteRequired) && (
-          <Tooltip
-            title={
-              <>
-                Project ID: {entry?.project.id}
-                <br />
-                Project Name: {entry?.project.name}
-                <br />
-                Task ID: {entry?.task.id}
-                <br />
-                Task Name: {entry?.task.name}
-              </>
-            }
+        <Tooltip
+          title={
+            <>
+              Project ID: {entry?.project.id}
+              <br />
+              Project Name: {entry?.project.name}
+              <br />
+              Task ID: {entry?.task.id}
+              <br />
+              Task Name: {entry?.task.name}
+            </>
+          }
+        >
+          <div
+            style={{
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+            }}
           >
-            <div
-              style={{
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-              }}
-            >
-              {specialTask?.displayName ??
-                (isSoftwareDevTask(entry?.task.name) ? (
-                  <>Work ({entry?.project.name})</>
-                ) : (
-                  entry?.task.name
-                ))}
-            </div>
-          </Tooltip>
-        )}
+            {entry && <TaskName entry={entry} />}
+          </div>
+        </Tooltip>
       </Col>
       <Col
         xxl={13}
@@ -320,18 +283,13 @@ const TimeEntryRow = ({
         xs={14}
         style={{ textAlign: "center" }}
       >
-        {day.isBusinessDay && (specialTask?.noteRequired || !specialTask) ? (
-          <TimeEntryInput
+        {day.isBusinessDay ? (
+          <EntryNoteInput
             day={day}
             entry={entry}
             loadMonth={loadMonth}
             setEntries={setEntries}
           />
-        ) : specialTask && !specialTask?.noteRequired ? (
-          <i>
-            {specialTask.emoji} {specialTask?.displayName ?? entry?.task.name}{" "}
-            {specialTask.emoji}
-          </i>
         ) : (
           <i>weekend</i>
         )}
@@ -339,45 +297,23 @@ const TimeEntryRow = ({
       <Col lg={5} sm={4} xs={0} style={{ textAlign: "center" }}>
         {entry?.hours && `${entry.hours} hours`}
         {!entry && day.date.isoWeekday() === 1 && primaryTask && (
-          <Button
-            disabled={loading}
+          <FillEntriesWeekButton
+            day={day}
             loading={loading}
-            onClick={async () => {
-              setLoading(true);
-              const currentDate = day.date.clone();
-              const promises = Array(5)
-                .fill(1)
-                .map(() => {
-                  const promise = createTimeEntry(
-                    currentDate.format(HARVEST_DATE_FORMAT),
-                    primaryTask.projectId,
-                    primaryTask.taskId
-                  );
-                  currentDate.add(1, "day");
-                  return promise;
-                });
-
-              const responses = await Promise.all(promises);
-              setLoading(false);
-              if (responses.every((r) => r.status === 201)) {
-                message.success("New entries created!");
-
-                setEntries((prevEntries) => {
-                  if (!prevEntries) {
-                    return prevEntries;
-                  }
-                  return [...prevEntries, responses.map((r) => r.data)]
-                    .flat()
-                    .sort((a, b) => b.spent_date.localeCompare(a.spent_date));
-                });
-              } else {
-                message.error("Something went wrong while creating entries.");
-                await loadMonth();
-              }
+            setLoading={setLoading}
+            task={primaryTask}
+            loadMonth={loadMonth}
+            onCreatedEntries={(newEntries) => {
+              setEntries((prevEntries) => {
+                if (!prevEntries) {
+                  return prevEntries;
+                }
+                return [...prevEntries, newEntries]
+                  .flat()
+                  .sort((a, b) => b.spent_date.localeCompare(a.spent_date));
+              });
             }}
-          >
-            <PlusOutlined /> Work entries for this week
-          </Button>
+          />
         )}
       </Col>
       <Col sm={1} xs={0}>
@@ -407,7 +343,7 @@ const TimeEntryRow = ({
   );
 };
 
-const TimeEntryInput = ({
+const EntryNoteInput = ({
   day,
   entry,
   loadMonth,
