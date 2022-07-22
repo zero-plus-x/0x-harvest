@@ -1,11 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nookies from "nookies";
 import { HARVEST_API_BASE_URL } from "../../../lib/harvestConfig";
+import * as Sentry from "@sentry/nextjs";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   return new Promise(async () => {
     const oldUrl = req.url;
     req.url = oldUrl?.replace(/^\/api\/harvest/, "");
@@ -29,8 +27,12 @@ export default async function handler(
       });
 
       if (resp.headers.get("content-type")?.startsWith("application/json")) {
-        const respText = await resp.json();
-        res.status(resp.status).json(respText);
+        const data = await resp.json();
+
+        if (req.url === "/users/me" && data) {
+          Sentry.captureMessage(`Loaded page`, { user: { email: data.email } });
+        }
+        res.status(resp.status).json(data);
       } else {
         const respText = await resp.text();
         res.status(resp.status).json(respText);
@@ -42,3 +44,5 @@ export default async function handler(
     }
   });
 }
+
+export default Sentry.withSentry(handler);

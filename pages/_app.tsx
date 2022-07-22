@@ -1,7 +1,6 @@
 import "../styles/globals.css";
 import Head from "next/head";
 import type { AppProps } from "next/app";
-
 import "antd/dist/antd.css";
 import React from "react";
 import { useRouter } from "next/router";
@@ -10,7 +9,7 @@ import { useUser } from "../lib/api";
 
 const publicPaths = ["/login"];
 
-function MyApp({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
   const { isError } = useUser();
   const router = useRouter();
 
@@ -38,4 +37,4 @@ function MyApp({ Component, pageProps }: AppProps) {
     </>
   );
 }
-export default MyApp;
+export default App;
