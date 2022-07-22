@@ -27,8 +27,15 @@ export default async function handler(
           ? undefined
           : JSON.stringify(req.body),
       });
-      const respText = await resp.text();
-      res.status(resp.status).json(respText);
+
+      if (resp.headers.get("content-type")?.startsWith("application/json")) {
+        const respText = await resp.json();
+        res.status(resp.status).json(respText);
+      } else {
+        const respText = await resp.text();
+        res.status(resp.status).json(respText);
+      }
+
       return;
     } else {
       return res.status(401).end();

@@ -509,31 +509,30 @@ const CreateEntryButton = ({
   const { data: projectAssignments } = useProjectAssignments();
 
   const menu = (
-    <Menu>
-      {projectAssignments?.map((p) => (
-        <Menu.ItemGroup key={p.project.id} title={p.project.name}>
-          {p.task_assignments.map((t) => {
-            const override = specialTasks[t.task.id];
-            return (
-              <Menu.Item
-                key={t.task.id}
-                icon={<PlusOutlined />}
-                onClick={async () =>
-                  await createEntry(p.project.id, t.task.id, FALLBACK_HOURS)
-                }
-              >
+    <Menu
+      items={projectAssignments?.map((p) => ({
+        key: p.project.id,
+        label: p.project.name,
+        type: "group",
+        children: p.task_assignments.map((t) => {
+          const override = specialTasks[t.task.id];
+          return {
+            key: t.task.id,
+            onClick: () => createEntry(p.project.id, t.task.id, FALLBACK_HOURS),
+            label: (
+              <>
                 {t.task.name} {override?.emoji}{" "}
                 {primaryTask?.taskId === t.task.id ? (
                   <>
                     (current <i>work</i>)
                   </>
                 ) : null}
-              </Menu.Item>
-            );
-          })}
-        </Menu.ItemGroup>
-      ))}
-    </Menu>
+              </>
+            ),
+          };
+        }),
+      }))}
+    />
   );
 
   return (

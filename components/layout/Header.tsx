@@ -34,34 +34,32 @@ export default function Header() {
         mode="horizontal"
         theme="dark"
         selectedKeys={[router.pathname.split("/")[1] || "home"]}
-      >
-        <Menu.Item key="home">
-          <Link href="/">Hours</Link>
-        </Menu.Item>
-        <Menu.Item key="vacation">
-          <Link href="/vacation">Vacation</Link>
-        </Menu.Item>
-        <Menu.Item key="settings">
-          <Link href="/settings">Settings</Link>
-        </Menu.Item>
-        {!isLoading && (
-          <Menu.Item key="login">
-            {data ? (
-              <span
-                title="Logout"
-                onClick={async () => {
-                  await logout();
-                  location.reload();
-                }}
-              >
-                <Avatar shape="square" src={data.avatar_url} /> {data.email}
-              </span>
-            ) : (
-              <Link href="/login">Log In</Link>
-            )}
-          </Menu.Item>
-        )}
-      </Menu>
+        items={[
+          { key: "home", label: <Link href="/">Hours</Link> },
+          { key: "vacation", label: <Link href="/vacation">Vacation</Link> },
+          { key: "settings", label: <Link href="/settings">Settings</Link> },
+          {
+            key: "login",
+            label: !isLoading && (
+              <>
+                {data ? (
+                  <span
+                    title="Logout"
+                    onClick={async () => {
+                      await logout();
+                      location.reload();
+                    }}
+                  >
+                    <Avatar shape="square" src={data.avatar_url} /> {data.email}
+                  </span>
+                ) : (
+                  <Link href="/login">Log In</Link>
+                )}
+              </>
+            ),
+          },
+        ]}
+      />
     </Layout.Header>
   );
 }

@@ -13,7 +13,12 @@ export default function CommonLayout({
       <Layout.Content>
         <Row>
           <Col md={2} sm={1} xs={0}></Col>
-          <Col md={20} sm={22} xs={24} style={{ paddingTop: 20 }}>
+          <Col
+            md={20}
+            sm={22}
+            xs={24}
+            style={{ paddingTop: 20, paddingBottom: 50 }}
+          >
             {children}
           </Col>
           <Col md={2} sm={1} xs={0}></Col>
