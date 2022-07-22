@@ -77,8 +77,8 @@ const PrimaryTaskCard = observer(() => {
   return (
     <Card>
       <Card.Meta
-        title="Primary task"
-        description="The task that you consider to be your main 'work'. Used when filling in a whole week/month in a single click."
+        title="Work task"
+        description="The task that you consider to be your main 'work'. Used when filling in a whole week/month in a single click. If not specified, the most-used task in the past 30 days will be used."
       />
       <Select
         value={userSettingsState.primaryTaskId}

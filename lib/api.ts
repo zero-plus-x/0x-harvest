@@ -100,9 +100,15 @@ export const useProjectAssignments = () => {
   };
 };
 
-export const updateTimeEntry = (entryId: number, notes: string) => {
+export const updateTimeEntryNote = (entryId: number, notes: string) => {
   return axios.patch<TimeEntry>(`${HARVEST_API_URL}/time_entries/${entryId}`, {
     notes,
+  });
+};
+
+export const updateTimeEntryHours = (entryId: number, hours: number) => {
+  return axios.patch<TimeEntry>(`${HARVEST_API_URL}/time_entries/${entryId}`, {
+    hours,
   });
 };
 

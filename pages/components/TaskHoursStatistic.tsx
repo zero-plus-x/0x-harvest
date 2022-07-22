@@ -11,8 +11,6 @@ export const TaskHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
   const clientHours = entries
     ?.filter(
       (e) =>
-        // note that primaryTask is derived based on the most commonly-used task in the last 30 days
-        // it would be safer to let the user select their primary task in the UI
         e.task.id === primaryTask?.taskId &&
         // client task is not part of the default absence/0+x internal projects
         !projects[e.project.id]

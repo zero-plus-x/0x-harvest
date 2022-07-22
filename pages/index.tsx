@@ -21,6 +21,7 @@ import {
   Tooltip,
   Row,
   Col,
+  InputNumber,
 } from "antd";
 import { useSWRConfig } from "swr";
 import {
@@ -38,7 +39,8 @@ import {
   HARVEST_DATE_FORMAT,
   projects,
   specialTasks,
-  updateTimeEntry,
+  updateTimeEntryHours,
+  updateTimeEntryNote,
   useProjectAssignments,
   useTimeEntries,
 } from "../lib/api";
@@ -295,7 +297,13 @@ const TimeEntryRow = ({
         )}
       </Col>
       <Col lg={5} sm={4} xs={0} style={{ textAlign: "center" }}>
-        {entry?.hours && `${entry.hours} hours`}
+        {entry?.hours && (
+          <EntryTimeInput
+            entry={entry}
+            loadMonth={loadMonth}
+            setEntries={setEntries}
+          />
+        )}
         {!entry && day.date.isoWeekday() === 1 && primaryTask && (
           <FillEntriesWeekButton
             day={day}
@@ -340,6 +348,49 @@ const TimeEntryRow = ({
         )}
       </Col>
     </Row>
+  );
+};
+
+const EntryTimeInput = ({
+  entry,
+  loadMonth,
+  setEntries,
+}: {
+  entry: TimeEntry;
+  loadMonth: () => Promise<void>;
+  setEntries: (
+    fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
+  ) => void;
+}) => {
+  return (
+    <InputNumber
+      min={0}
+      max={24}
+      addonAfter="hours"
+      defaultValue={entry?.hours}
+      style={{ width: 120 }}
+      onChange={async (newValue) => {
+        const response = await updateTimeEntryHours(entry.id, newValue);
+        if (response.status === 200) {
+          message.success("Time updated!");
+
+          setEntries((prevEntries) => {
+            if (!prevEntries) {
+              return prevEntries;
+            }
+            const entriesCopy = [...prevEntries];
+            const updatedEntryIdx = entriesCopy.findIndex(
+              (e) => e.id === response.data.id
+            );
+            entriesCopy[updatedEntryIdx] = response.data;
+            return entriesCopy;
+          });
+        } else {
+          message.error("Something went wrong while updating time.");
+          await loadMonth();
+        }
+      }}
+    />
   );
 };
 
@@ -405,7 +456,7 @@ const EntryNoteInput = ({
             return;
           }
           setLoading(true);
-          const response = await updateTimeEntry(entry.id, notes);
+          const response = await updateTimeEntryNote(entry.id, notes);
           setLoading(false);
           if (response.status === 200) {
             message.success("Note saved!");
