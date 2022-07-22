@@ -54,6 +54,31 @@ export const specialTasks: { [taskId: number]: SpecialTask } = {
     // "Parental absence"
     emoji: "👨‍👩‍👦",
   },
+  6646906: {
+    // Other non-billable
+    emoji: "🕑",
+  },
+  7942637: {
+    // External tech talk
+    emoji: "💬",
+  },
+  5906330: {
+    // Interviewed by client
+    emoji: "💼",
+  },
+  10452372: {
+    // Intern mentoring
+    emoji: "🚀",
+  },
+  5380873: {
+    // Reviewing candidate
+    emoji: "🤓",
+  },
+  9085557: {
+    // Welcome day compass
+    emoji: "🧭",
+    displayName: "Compass welcome",
+  },
 };
 
 export const useTimeEntries = (
