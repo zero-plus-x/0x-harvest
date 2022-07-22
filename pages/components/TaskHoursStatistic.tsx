@@ -3,7 +3,7 @@ import { projects } from "../../lib/api";
 import { TimeEntry } from "../../types";
 import { usePrimaryTask } from "../../utils";
 
-export const TaskHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
+const TaskHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
   const primaryTask = usePrimaryTask();
   if (!primaryTask) {
     return null;
@@ -25,3 +25,5 @@ export const TaskHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
     />
   );
 };
+
+export default TaskHoursStatistic;

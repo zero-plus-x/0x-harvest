@@ -43,10 +43,10 @@ import {
   useProjectAssignments,
   useTimeEntries,
 } from "../lib/api";
-import { TableLoader } from "./components/TableLoader";
-import { TaskHoursStatistic } from "./components/TaskHoursStatistic";
-import { TaskName } from "./components/TaskName";
-import { FillEntriesWeekButton } from "./components/FillEntriesWeekButton";
+import TableLoader from "./components/TableLoader";
+import TaskHoursStatistic from "./components/TaskHoursStatistic";
+import TaskName from "./components/TaskName";
+import FillEntriesWeekButton from "./components/FillEntriesWeekButton";
 
 const Home: NextPage = () => {
   return <TimeEntries />;
@@ -152,29 +152,37 @@ const TimeEntries = () => {
           <>
             <br />
             <div>
-              {dayList.map((day, dayIdx) => {
+              {dayList.map((day) => {
                 const harvestDate = day.date.format(HARVEST_DATE_FORMAT);
                 const dayEntries = entries.filter(
                   (e) => e.spent_date === harvestDate
                 );
+
+                const isMonday = day.date.isoWeekday() === 1;
+                const isFriday = day.date.isoWeekday() === 5;
+                const marginSize = 8;
+                const style = isMonday
+                  ? { marginTop: marginSize }
+                  : isFriday
+                  ? { marginBottom: marginSize }
+                  : day.isBusinessDay
+                  ? { marginTop: marginSize, marginBottom: marginSize }
+                  : {};
                 if (!dayEntries.length) {
                   return (
-                    <TimeEntryRow
-                      day={day}
-                      key={harvestDate}
-                      showDate
-                      loadMonth={loadMonth}
-                      setEntries={setEntries}
-                    />
+                    <div key={harvestDate} style={style}>
+                      <TimeEntryRow
+                        day={day}
+                        key={harvestDate}
+                        showDate
+                        loadMonth={loadMonth}
+                        setEntries={setEntries}
+                      />
+                    </div>
                   );
                 }
                 return (
-                  <div
-                    key={harvestDate}
-                    style={{
-                      marginTop: dayList[dayIdx - 1]?.isBusinessDay ? 6 : 0,
-                    }}
-                  >
+                  <div key={harvestDate} style={style}>
                     {dayEntries.map((entry, entryIdx) => (
                       <TimeEntryRow
                         day={day}

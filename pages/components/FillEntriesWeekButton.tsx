@@ -4,7 +4,7 @@ import { createTimeEntry, HARVEST_DATE_FORMAT } from "../../lib/api";
 import { TaskWithProject, TimeEntry } from "../../types";
 import { Day } from "../../utils";
 
-export const FillEntriesWeekButton = ({
+const FillEntriesWeekButton = ({
   day,
   loading,
   setLoading,
@@ -53,3 +53,5 @@ export const FillEntriesWeekButton = ({
     </Button>
   );
 };
+
+export default FillEntriesWeekButton;

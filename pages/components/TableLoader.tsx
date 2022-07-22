@@ -1,6 +1,6 @@
 import { Skeleton } from "antd";
 
-export const TableLoader = () => (
+const TableLoader = () => (
   <>
     <Skeleton active />
     <Skeleton active />
@@ -11,3 +11,5 @@ export const TableLoader = () => (
     <Skeleton active />
   </>
 );
+
+export default TableLoader;
