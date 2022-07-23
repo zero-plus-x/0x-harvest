@@ -370,8 +370,13 @@ const TimeEntryRow = ({
               .fill(1)
               .map((_, idx) => {
                 const current = day.date.clone().add(idx, "day");
+
+                if (current.month() !== day.date.month()) {
+                  return;
+                }
                 return current;
-              })}
+              })
+              .filter((d): d is moment.Moment => !!d)}
             loading={loading}
             setLoading={setLoading}
             task={primaryTask}

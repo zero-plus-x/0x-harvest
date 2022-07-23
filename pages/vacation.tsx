@@ -1,7 +1,16 @@
 import type { NextPage } from "next";
 import moment from "moment";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { Alert, Button, Col, PageHeader, Row, Skeleton, Statistic } from "antd";
+import {
+  Alert,
+  Button,
+  Col,
+  List,
+  PageHeader,
+  Row,
+  Skeleton,
+  Statistic,
+} from "antd";
 import { TimeEntry } from "../types";
 import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
@@ -9,6 +18,7 @@ import { requireAuth } from "../lib/routeGuards";
 import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
 import { useState } from "react";
 import Link from "next/link";
+import TableLoader from "../components/entries/TableLoader";
 
 const Vacation: NextPage = () => {
   const router = useRouter();
@@ -132,26 +142,18 @@ const VacationsDays = ({
   vacationEntries?: TimeEntry[];
 }) => {
   return (
-    <div style={{ marginLeft: 20 }}>
-      {vacationEntries ? (
-        <>
-          {vacationEntries.map((entry) => (
-            <div key={entry.id}>
-              {entry.spent_date} {entry.notes ? ` - ${entry.notes}` : ""}
-            </div>
-          ))}
-        </>
-      ) : (
-        <>
-          <Skeleton active />
-          <Skeleton active />
-          <Skeleton active />
-          <Skeleton active />
-          <Skeleton active />
-          <Skeleton active />
-          <Skeleton active />
-        </>
+    <List
+      loading={!vacationEntries}
+      size="small"
+      dataSource={vacationEntries?.map((entry) => ({
+        date: entry.spent_date,
+        notes: entry.notes,
+      }))}
+      renderItem={(item) => (
+        <List.Item style={{ padding: "2px 25px" }}>
+          {item.date} {item.notes ? ` - ${item.notes}` : ""}
+        </List.Item>
       )}
-    </div>
+    />
   );
 };
