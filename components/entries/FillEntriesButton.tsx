@@ -44,7 +44,11 @@ const FillEntriesButton = ({
         if (!promises.length) {
           message.info("No new entries created.");
         } else if (responses.every((r) => r.status === 201)) {
-          message.success("New entries created!");
+          message.success(
+            `${responses.length} new ${
+              responses.length === 1 ? "entry" : "entries"
+            } created!`
+          );
           onCreatedEntries(responses.map((r) => r.data));
         } else {
           message.error("Something went wrong while creating entries.");
