@@ -31,7 +31,7 @@ function App({ Component, pageProps }: AppProps) {
         <title>0+x Harvest</title>
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
+          content="initial-scale=1, maximum-scale=1, shrink-to-fit=no"
         />
         <meta name="theme-color" content="#001529" />
       </Head>

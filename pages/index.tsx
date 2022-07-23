@@ -275,7 +275,7 @@ const TimeEntryRow = ({
           </>
         )}
       </Col>
-      <Col xl={4} md={5} sm={4} xs={6}>
+      <Col xl={4} md={5} sm={4} xs={5}>
         <Tooltip
           title={
             <>
@@ -300,7 +300,7 @@ const TimeEntryRow = ({
           </div>
         </Tooltip>
       </Col>
-      <Col xl={9} lg={7} sm={6} xs={6} style={{ textAlign: "center" }}>
+      <Col xl={9} lg={7} sm={6} xs={9} style={{ textAlign: "center" }}>
         {day.isBusinessDay ? (
           entry ? (
             <EntryNoteInput
@@ -411,6 +411,10 @@ const EntryTimeInput = ({
       value={value}
       onChange={(newValue) => setValue(newValue)}
       onBlur={async () => {
+        if (value === entry.hours) {
+          return;
+        }
+
         const response = await updateTimeEntryHours(entry.id, value);
         if (response.status === 200) {
           message.success("Time updated!");
