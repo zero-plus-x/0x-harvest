@@ -49,7 +49,7 @@ const FillEntriesWeekButton = ({
         }
       }}
     >
-      <PlusOutlined /> Work entries for this week
+      <PlusOutlined /> Fill week
     </Button>
   );
 };

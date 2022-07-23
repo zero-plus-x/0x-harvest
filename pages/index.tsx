@@ -140,10 +140,10 @@ const TimeEntries = () => {
         }
       >
         <Row>
-          <Col lg={5} sm={8} xs={11}>
+          <Col lg={5} sm={8} xs={12}>
             <LoggedHoursStatistic date={currentDate} entries={entries} />
           </Col>
-          <Col lg={6} sm={12} xs={13}>
+          <Col lg={6} sm={12} xs={12}>
             <TaskHoursStatistic entries={entries} />
           </Col>
         </Row>
@@ -275,7 +275,7 @@ const TimeEntryRow = ({
           </>
         )}
       </Col>
-      <Col xl={4} md={5} sm={4} xs={5}>
+      <Col xl={4} md={5} sm={4} xs={6}>
         <Tooltip
           title={
             <>

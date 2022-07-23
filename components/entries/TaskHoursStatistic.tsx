@@ -21,12 +21,9 @@ const TaskHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
   return (
     <Statistic
       loading={!entries}
-      title={
-        <>
-          Logged hours for <TaskName entry={primaryTask} />
-        </>
-      }
+      title={<TaskName entry={primaryTask} />}
       value={clientHours}
+      suffix="h"
     />
   );
 };
