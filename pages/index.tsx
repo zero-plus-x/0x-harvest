@@ -393,6 +393,8 @@ const EntryTimeInput = ({
     fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
   ) => void;
 }) => {
+  const [value, setValue] = useState(entry.hours);
+
   return (
     <InputNumber
       min={0.25}
@@ -406,8 +408,10 @@ const EntryTimeInput = ({
       }
       defaultValue={entry?.hours}
       style={{ marginTop: 2, maxWidth: 130 }}
-      onChange={async (newValue) => {
-        const response = await updateTimeEntryHours(entry.id, newValue);
+      value={value}
+      onChange={(newValue) => setValue(newValue)}
+      onBlur={async () => {
+        const response = await updateTimeEntryHours(entry.id, value);
         if (response.status === 200) {
           message.success("Time updated!");
 
@@ -442,7 +446,7 @@ const EntryNoteInput = ({
     fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
   ) => void;
 }) => {
-  const [notes, setNotes] = useState(entry?.notes || "");
+  const [notes, setNotes] = useState(entry.notes || "");
   const [loading, setLoading] = useState(false);
 
   return (
