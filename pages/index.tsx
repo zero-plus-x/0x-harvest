@@ -140,10 +140,10 @@ const TimeEntries = () => {
         }
       >
         <Row>
-          <Col lg={5} sm={8} xs={12}>
+          <Col lg={5} sm={8} xs={11}>
             <LoggedHoursStatistic date={currentDate} entries={entries} />
           </Col>
-          <Col lg={6} sm={12} xs={12}>
+          <Col lg={6} sm={12} xs={13}>
             <TaskHoursStatistic entries={entries} />
           </Col>
         </Row>
@@ -397,6 +397,7 @@ const EntryTimeInput = ({
     <InputNumber
       min={0.25}
       max={24}
+      inputMode="decimal"
       addonAfter={
         <>
           <span>h</span>
