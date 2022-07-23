@@ -395,11 +395,11 @@ const EntryTimeInput = ({
 }) => {
   return (
     <InputNumber
-      min={0}
+      min={0.25}
       max={24}
       addonAfter="hours"
       defaultValue={entry?.hours}
-      style={{ width: 110, marginTop: 2 }}
+      style={{ width: 120, marginTop: 2 }}
       onChange={async (newValue) => {
         const response = await updateTimeEntryHours(entry.id, newValue);
         if (response.status === 200) {
