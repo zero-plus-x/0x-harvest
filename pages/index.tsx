@@ -270,12 +270,12 @@ const TimeEntryRow = ({
       >
         {showDate && (
           <>
-            <span className="date-year">{day.date.format("YYYY-MM-")}</span>
+            <span className="hide-below-md">{day.date.format("YYYY-MM-")}</span>
             <span>{day.date.format("DD")}</span>
           </>
         )}
       </Col>
-      <Col xl={3} lg={4} sm={4} xs={5}>
+      <Col xl={4} md={5} sm={4} xs={5}>
         <Tooltip
           title={
             <>
@@ -300,7 +300,7 @@ const TimeEntryRow = ({
           </div>
         </Tooltip>
       </Col>
-      <Col xl={10} lg={8} sm={7} xs={9} style={{ textAlign: "center" }}>
+      <Col xl={9} lg={7} sm={6} xs={6} style={{ textAlign: "center" }}>
         {day.isBusinessDay ? (
           entry ? (
             <EntryNoteInput
@@ -319,7 +319,7 @@ const TimeEntryRow = ({
           <i>weekend</i>
         )}
       </Col>
-      <Col lg={3} sm={4} xs={2} style={{ textAlign: "center" }}>
+      <Col lg={3} sm={4} xs={5} style={{ textAlign: "center", paddingLeft: 8 }}>
         {entry?.hours && (
           <EntryTimeInput
             entry={entry}
@@ -397,9 +397,14 @@ const EntryTimeInput = ({
     <InputNumber
       min={0.25}
       max={24}
-      addonAfter="hours"
+      addonAfter={
+        <>
+          <span>h</span>
+          <span className="hide-below-md">ours</span>
+        </>
+      }
       defaultValue={entry?.hours}
-      style={{ width: 120, marginTop: 2 }}
+      style={{ marginTop: 2, maxWidth: 130 }}
       onChange={async (newValue) => {
         const response = await updateTimeEntryHours(entry.id, newValue);
         if (response.status === 200) {
@@ -574,7 +579,12 @@ const CreateEntryButton = ({
         }
       }}
     >
-      <PlusOutlined /> {FALLBACK_HOURS} hour{" "}
+      <PlusOutlined /> {FALLBACK_HOURS}&nbsp;
+      <>
+        <span>h</span>
+        <span className="hide-below-md">our</span>
+      </>
+      &nbsp;
       {isSoftwareDevTask(primaryTask?.taskName)
         ? "work"
         : primaryTask?.taskName}
