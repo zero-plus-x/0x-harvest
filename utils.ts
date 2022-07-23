@@ -1,6 +1,6 @@
 import moment from "moment";
 import { useProjectAssignments, useTimeEntries } from "./lib/api";
-import { userSettingsState } from "./stores/UserSettingsStore";
+import { useUserSettingState } from "./stores/UserSettingsStore";
 import { TaskWithProject, TimeEntry } from "./types";
 
 export const VACATION_ALLOWANCE_KEY = "vacationAllowance";
@@ -38,6 +38,7 @@ export const usePrimaryTask = (): TaskWithProject | undefined => {
 
   const { data: projectAssignments } = useProjectAssignments();
   const { data: entries } = useTimeEntries(start, end);
+  const userSettingsState = useUserSettingState();
   const primaryTaskIdUserSetting = userSettingsState.primaryTaskId;
   if (primaryTaskIdUserSetting) {
     const projectAssignment = projectAssignments?.find((p) =>

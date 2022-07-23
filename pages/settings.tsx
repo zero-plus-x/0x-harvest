@@ -10,7 +10,7 @@ import {
 } from "../utils";
 import { specialTasks, useProjectAssignments } from "../lib/api";
 import { observer } from "mobx-react-lite";
-import { userSettingsState } from "../stores/UserSettingsStore";
+import { useUserSettingState } from "../stores/UserSettingsStore";
 
 const Settings: NextPage = () => {
   return (
@@ -72,7 +72,7 @@ const VacationAllowanceCard = () => {
 
 const PrimaryTaskCard = observer(() => {
   const { data: projectAssignments } = useProjectAssignments();
-  const primaryTask = usePrimaryTask();
+  const userSettingsState = useUserSettingState();
 
   return (
     <Card>

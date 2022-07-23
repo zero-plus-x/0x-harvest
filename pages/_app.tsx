@@ -6,6 +6,10 @@ import React from "react";
 import { useRouter } from "next/router";
 import CommonLayout from "../components/layout/CommonLayout";
 import { useUser } from "../lib/api";
+import {
+  UserSettingsStore,
+  UserSettingsStoreContext,
+} from "../stores/UserSettingsStore";
 
 const publicPaths = ["/login"];
 
@@ -35,10 +39,11 @@ function App({ Component, pageProps }: AppProps) {
         />
         <meta name="theme-color" content="#001529" />
       </Head>
-
-      <CommonLayout>
-        <Component {...pageProps} />
-      </CommonLayout>
+      <UserSettingsStoreContext.Provider value={new UserSettingsStore()}>
+        <CommonLayout>
+          <Component {...pageProps} />
+        </CommonLayout>
+      </UserSettingsStoreContext.Provider>
     </>
   );
 }

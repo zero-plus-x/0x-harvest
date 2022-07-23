@@ -47,7 +47,8 @@ import {
 import TableLoader from "../components/entries/TableLoader";
 import TaskHoursStatistic from "../components/entries/TaskHoursStatistic";
 import TaskName from "../components/entries/TaskName";
-import FillEntriesWeekButton from "../components/entries/FillEntriesWeekButton";
+import FillEntriesButton from "../components/entries/FillEntriesButton";
+import FillMonthButton from "../components/entries/FillMonthButton";
 
 const Home: NextPage = () => {
   return <TimeEntries />;
@@ -57,7 +58,7 @@ export default Home;
 
 const TimeEntries = () => {
   const { mutate } = useSWRConfig();
-
+  const primaryTask = usePrimaryTask();
   const [currentYear, setCurrentYear] = useState(moment().year());
   const [currentMonth, setCurrentMonth] = useState(moment().month());
 
@@ -84,6 +85,19 @@ const TimeEntries = () => {
     currentDate.year(),
     currentDate.month()
   ).reverse();
+
+  const emptyDays = entries
+    ? dayList.filter((d) => {
+        if (!d.isBusinessDay) {
+          return false;
+        }
+
+        const harvestDate = d.date.format(HARVEST_DATE_FORMAT);
+        const dayEntries = entries.filter((e) => e.spent_date === harvestDate);
+        return !dayEntries.length;
+      })
+    : [];
+
   return (
     <div>
       <PageHeader
@@ -143,10 +157,30 @@ const TimeEntries = () => {
           <Col lg={5} sm={8} xs={12}>
             <LoggedHoursStatistic date={currentDate} entries={entries} />
           </Col>
-          <Col lg={6} sm={12} xs={12}>
+          <Col sm={12} xs={12}>
             <TaskHoursStatistic entries={entries} />
           </Col>
         </Row>
+        {primaryTask && entries && emptyDays.length > 0 && (
+          <Row style={{ marginTop: 20 }}>
+            <Col xs={24}>
+              <FillMonthButton
+                loadMonth={loadMonth}
+                days={emptyDays.map((d) => d.date)}
+                onCreatedEntries={(newEntries) => {
+                  setEntries((prevEntries) => {
+                    if (!prevEntries) {
+                      return prevEntries;
+                    }
+                    return [...prevEntries, newEntries]
+                      .flat()
+                      .sort((a, b) => b.spent_date.localeCompare(a.spent_date));
+                  });
+                }}
+              />
+            </Col>
+          </Row>
+        )}
       </PageHeader>
       <div style={{ marginLeft: 20 }}>
         {entries ? (
@@ -276,29 +310,31 @@ const TimeEntryRow = ({
         )}
       </Col>
       <Col xl={4} md={5} sm={4} xs={5}>
-        <Tooltip
-          title={
-            <>
-              Project ID: {entry?.project.id}
-              <br />
-              Project Name: {entry?.project.name}
-              <br />
-              Task ID: {entry?.task.id}
-              <br />
-              Task Name: {entry?.task.name}
-            </>
-          }
-        >
-          <div
-            style={{
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-            }}
+        {entry && (
+          <Tooltip
+            title={
+              <>
+                Project ID: {entry.project.id}
+                <br />
+                Project Name: {entry.project.name}
+                <br />
+                Task ID: {entry.task.id}
+                <br />
+                Task Name: {entry.task.name}
+              </>
+            }
           >
-            {entry && <TaskName entry={taskInfoFromTimEntry(entry)} />}
-          </div>
-        </Tooltip>
+            <div
+              style={{
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+              }}
+            >
+              <TaskName entry={taskInfoFromTimEntry(entry)} />
+            </div>
+          </Tooltip>
+        )}
       </Col>
       <Col xl={9} lg={7} sm={6} xs={9} style={{ textAlign: "center" }}>
         {day.isBusinessDay ? (
@@ -328,8 +364,14 @@ const TimeEntryRow = ({
           />
         )}
         {!entry && day.date.isoWeekday() === 1 && primaryTask && (
-          <FillEntriesWeekButton
-            day={day}
+          <FillEntriesButton
+            label="Fill week"
+            days={Array(5)
+              .fill(1)
+              .map((_, idx) => {
+                const current = day.date.clone().add(idx, "day");
+                return current;
+              })}
             loading={loading}
             setLoading={setLoading}
             task={primaryTask}

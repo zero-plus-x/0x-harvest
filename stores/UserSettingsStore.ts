@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react";
 import { computed, makeObservable, observable } from "mobx";
 import { TaskWithProject } from "../types";
 
@@ -34,4 +35,14 @@ export class UserSettingsStore {
   }
 }
 
-export const userSettingsState = new UserSettingsStore();
+export const UserSettingsStoreContext = createContext<
+  UserSettingsStore | undefined
+>(undefined);
+
+export const useUserSettingState = () => {
+  const state = useContext(UserSettingsStoreContext);
+  if (!state) {
+    throw new Error("User setting state not initialized");
+  }
+  return state;
+};
