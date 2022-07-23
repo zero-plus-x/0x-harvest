@@ -28,6 +28,7 @@ import {
   Day,
   getDaysInMonthRange,
   isSoftwareDevTask,
+  taskInfoFromTimEntry,
   usePrimaryTask,
   weekdaysInMonth,
 } from "../utils";
@@ -139,10 +140,10 @@ const TimeEntries = () => {
         }
       >
         <Row>
-          <Col xl={4} lg={5} sm={8} xs={12}>
+          <Col lg={5} sm={8} xs={12}>
             <LoggedHoursStatistic date={currentDate} entries={entries} />
           </Col>
-          <Col xl={6} lg={6} sm={12} xs={12}>
+          <Col lg={6} sm={12} xs={12}>
             <TaskHoursStatistic entries={entries} />
           </Col>
         </Row>
@@ -259,17 +260,22 @@ const TimeEntryRow = ({
       )}
     >
       <Col
-        xl={2}
-        lg={4}
-        sm={5}
-        xs={6}
+        xl={3}
+        md={4}
+        sm={2}
+        xs={2}
         style={{
           fontWeight: day.date.isSame(new Date(), "date") ? "bold" : undefined,
         }}
       >
-        {showDate && day.date.format(HARVEST_DATE_FORMAT)}
+        {showDate && (
+          <>
+            <span className="date-year">{day.date.format("YYYY-MM-")}</span>
+            <span>{day.date.format("DD")}</span>
+          </>
+        )}
       </Col>
-      <Col xxl={3} xl={4} lg={5} sm={5} xs={4}>
+      <Col xl={3} lg={4} sm={4} xs={5}>
         <Tooltip
           title={
             <>
@@ -290,18 +296,11 @@ const TimeEntryRow = ({
               overflow: "hidden",
             }}
           >
-            {entry && <TaskName entry={entry} />}
+            {entry && <TaskName entry={taskInfoFromTimEntry(entry)} />}
           </div>
         </Tooltip>
       </Col>
-      <Col
-        xxl={12}
-        xl={12}
-        lg={9}
-        sm={9}
-        xs={14}
-        style={{ textAlign: "center" }}
-      >
+      <Col xl={10} lg={8} sm={7} xs={9} style={{ textAlign: "center" }}>
         {day.isBusinessDay ? (
           entry ? (
             <EntryNoteInput
@@ -320,7 +319,7 @@ const TimeEntryRow = ({
           <i>weekend</i>
         )}
       </Col>
-      <Col lg={5} sm={4} xs={0} style={{ textAlign: "center" }}>
+      <Col lg={3} sm={4} xs={2} style={{ textAlign: "center" }}>
         {entry?.hours && (
           <EntryTimeInput
             entry={entry}
@@ -348,7 +347,7 @@ const TimeEntryRow = ({
           />
         )}
       </Col>
-      <Col sm={2} xs={0}>
+      <Col md={5} sm={6} xs={0} style={{ textAlign: "center" }}>
         {entry && (
           <span className="buttons">
             <Space>
@@ -400,7 +399,7 @@ const EntryTimeInput = ({
       max={24}
       addonAfter="hours"
       defaultValue={entry?.hours}
-      style={{ width: 120 }}
+      style={{ width: 110, marginTop: 2 }}
       onChange={async (newValue) => {
         const response = await updateTimeEntryHours(entry.id, newValue);
         if (response.status === 200) {

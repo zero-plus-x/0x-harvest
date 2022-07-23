@@ -7,7 +7,7 @@ export const getServerSideProps = forbidAuth;
 const Login: NextPage = () => {
   return (
     <Button onClick={() => window.location.replace("/api/oauth2")}>
-      Login via Harvest
+      Log in via Harvest
     </Button>
   );
 };

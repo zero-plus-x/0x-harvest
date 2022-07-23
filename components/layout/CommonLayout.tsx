@@ -12,8 +12,11 @@ export default function CommonLayout({
       <Header />
       <Layout.Content>
         <Row>
-          <Col md={2} sm={1} xs={0}></Col>
+          <Col xxl={5} xl={4} lg={2} md={2} sm={1} xs={0}></Col>
           <Col
+            xxl={14}
+            xl={16}
+            lg={20}
             md={20}
             sm={22}
             xs={24}
@@ -21,7 +24,7 @@ export default function CommonLayout({
           >
             {children}
           </Col>
-          <Col md={2} sm={1} xs={0}></Col>
+          <Col xxl={5} xl={4} lg={2} md={2} sm={1} xs={0}></Col>
         </Row>
       </Layout.Content>
     </Layout>

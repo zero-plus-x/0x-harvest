@@ -1,7 +1,7 @@
 import moment from "moment";
 import { useProjectAssignments, useTimeEntries } from "./lib/api";
 import { userSettingsState } from "./stores/UserSettingsStore";
-import { TaskWithProject } from "./types";
+import { TaskWithProject, TimeEntry } from "./types";
 
 export const VACATION_ALLOWANCE_KEY = "vacationAllowance";
 export const DEFAULT_VACATION_ALLOWANCE = 25;
@@ -113,3 +113,12 @@ export const getVacationAllowance = (): Record<number, number> => {
  */
 export const isSoftwareDevTask = (taskName?: string) =>
   taskName === "Software Development";
+
+export const taskInfoFromTimEntry = (entry: TimeEntry): TaskWithProject => {
+  return {
+    taskId: entry.task.id,
+    taskName: entry.task.name,
+    projectId: entry.project.id,
+    projectName: entry.project.name,
+  };
+};

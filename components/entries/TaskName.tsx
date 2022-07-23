@@ -1,22 +1,23 @@
 import { specialTasks } from "../../lib/api";
-import { TimeEntry } from "../../types";
+import { TaskWithProject } from "../../types";
 import { isSoftwareDevTask } from "../../utils";
 
-const TaskName = ({ entry }: { entry: TimeEntry }) => {
-  const specialTask = specialTasks[entry.task.id];
+const TaskName = ({ entry }: { entry: TaskWithProject }) => {
+  const specialTask = specialTasks[entry.taskId];
 
   if (specialTask) {
     return (
       <>
-        {specialTask.emoji} {specialTask.displayName || entry.task.name}{" "}
+        {specialTask.emoji} {specialTask.displayName || entry.taskName}{" "}
         {specialTask.emoji}
       </>
     );
   }
-  if (isSoftwareDevTask(entry.task.name)) {
-    return <>Work ({entry.project.name})</>;
+  if (isSoftwareDevTask(entry.taskName)) {
+    // most work projects are called "John - Spotify"
+    return <>Work ({entry.projectName.split(" - ")[1] || entry.projectName})</>;
   }
-  return <>{entry.task.name}</>;
+  return <>{entry.taskName}</>;
 };
 
 export default TaskName;

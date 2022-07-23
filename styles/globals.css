@@ -44,3 +44,9 @@ a {
 .delete-button:hover {
   background: #ffcccd !important;
 }
+
+@media (max-width: 768px) {
+  .date-year  {
+    display: none;
+  }
+}

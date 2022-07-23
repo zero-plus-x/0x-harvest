@@ -2,6 +2,7 @@ import { Statistic } from "antd";
 import { projects } from "../../lib/api";
 import { TimeEntry } from "../../types";
 import { usePrimaryTask } from "../../utils";
+import TaskName from "./TaskName";
 
 const TaskHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
   const primaryTask = usePrimaryTask();
@@ -20,7 +21,11 @@ const TaskHoursStatistic = ({ entries }: { entries?: TimeEntry[] }) => {
   return (
     <Statistic
       loading={!entries}
-      title={`Logged hours for ${primaryTask.projectName}`}
+      title={
+        <>
+          Logged hours for <TaskName entry={primaryTask} />
+        </>
+      }
       value={clientHours}
     />
   );
