@@ -309,7 +309,7 @@ const TimeEntryRow = ({
           </>
         )}
       </Col>
-      <Col xl={4} md={5} sm={4} xs={5}>
+      <Col xl={4} md={5} sm={4} xs={6}>
         {entry && (
           <Tooltip
             title={
