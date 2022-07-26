@@ -15,10 +15,10 @@ import { useUserSettingState } from "../stores/UserSettingsStore";
 const Settings: NextPage = () => {
   return (
     <Row gutter={20}>
-      <Col span={12}>
+      <Col md={12} xs={24}>
         <VacationAllowanceCard />
       </Col>
-      <Col span={12}>
+      <Col md={12} xs={24}>
         <PrimaryTaskCard />
       </Col>
     </Row>
@@ -73,7 +73,7 @@ const VacationAllowanceCard = () => {
 const PrimaryTaskCard = observer(() => {
   const { data: projectAssignments } = useProjectAssignments();
   const userSettingsState = useUserSettingState();
-
+  const primaryTask = usePrimaryTask();
   return (
     <Card>
       <Card.Meta
@@ -81,6 +81,7 @@ const PrimaryTaskCard = observer(() => {
         description="The task that you consider to be your main 'work'. Used when filling in a whole week/month in a single click. If not specified, the most-used task in the past 30 days will be used."
       />
       <Select
+        placeholder={primaryTask?.taskName}
         value={userSettingsState.primaryTaskId}
         style={{ marginTop: 20, width: 300 }}
         onChange={(value: number) => {

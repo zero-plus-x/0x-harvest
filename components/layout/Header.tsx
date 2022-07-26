@@ -24,25 +24,27 @@ export default function Header() {
           { key: "settings", label: <Link href="/settings">Settings</Link> },
           {
             key: "login",
-            label: (
-              <>
-                {!router.pathname.startsWith("/login") && data && !isLoading ? (
-                  <span
-                    title="Logout"
-                    onClick={async () => {
-                      await logout();
-                      location.reload();
-                    }}
-                  >
-                    <Avatar shape="square" src={data.avatar_url} />
-                    <span className="hide-below-sm">
-                      &nbsp;&nbsp;{data.email}
+            label: router.pathname.startsWith("/login") ? (
+              <Link href="/login">Log In</Link>
+            ) : (
+              !isLoading && (
+                <>
+                  {data && (
+                    <span
+                      title="Logout"
+                      onClick={async () => {
+                        await logout();
+                        location.reload();
+                      }}
+                    >
+                      <Avatar shape="square" src={data.avatar_url} />
+                      <span className="hide-below-sm">
+                        &nbsp;&nbsp;{data.email}
+                      </span>
                     </span>
-                  </span>
-                ) : (
-                  <Link href="/login">Log In</Link>
-                )}
-              </>
+                  )}
+                </>
+              )
             ),
           },
         ]}
