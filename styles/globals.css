@@ -45,8 +45,36 @@ a {
   background: #ffcccd !important;
 }
 
+.logo {
+  float: left;
+  width: 80px;
+  height: 30px;
+  margin-top: 10px;
+  margin-left: 30px;
+}
+
+
+@media (max-width: 576px) {
+  .hide-below-sm  {
+    display: none;
+  }
+
+  .logo {
+    margin-left: 0px;
+    width: 50px;
+  }
+}
+
 @media (max-width: 768px) {
   .hide-below-md  {
     display: none;
+  }
+
+  .header {
+    padding: 0 0 0 30px !important;
+  }
+
+  .ant-menu-item {
+    padding: 0 15px !important;
   }
 }

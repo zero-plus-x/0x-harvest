@@ -14,22 +14,6 @@ export default function Header() {
       <div className="logo">
         <Image src="/0x_logo.svg" height={30} width={30} alt="Logo" />
       </div>
-      <style jsx>{`
-        .logo {
-          float: left;
-          width: 80px;
-          height: 30px;
-          margin-top: 10px;
-          margin-left: 30px;
-        }
-
-        @media (max-width: 576px) {
-          .logo {
-            margin-left: 0px;
-            width: 50px;
-          }
-        }
-      `}</style>
       <Menu
         mode="horizontal"
         theme="dark"
@@ -50,7 +34,10 @@ export default function Header() {
                       location.reload();
                     }}
                   >
-                    <Avatar shape="square" src={data.avatar_url} /> {data.email}
+                    <Avatar shape="square" src={data.avatar_url} />
+                    <span className="hide-below-sm">
+                      &nbsp;&nbsp;{data.email}
+                    </span>
                   </span>
                 ) : (
                   <Link href="/login">Log In</Link>

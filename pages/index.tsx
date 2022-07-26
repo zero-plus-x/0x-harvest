@@ -49,6 +49,7 @@ import TaskHoursStatistic from "../components/entries/TaskHoursStatistic";
 import TaskName from "../components/entries/TaskName";
 import FillEntriesButton from "../components/entries/FillEntriesButton";
 import FillMonthButton from "../components/entries/FillMonthButton";
+import MonthNavigation from "../components/entries/MonthNavigation";
 
 const Home: NextPage = () => {
   return <TimeEntries />;
@@ -99,45 +100,19 @@ const TimeEntries = () => {
     : [];
 
   return (
-    <div>
+    <>
       <PageHeader
-        title={formattedDate}
-        breadcrumbRender={() => {
-          return (
-            <>
-              <Button
-                type="link"
-                style={{ padding: 0 }}
-                onClick={() => {
-                  if (currentMonth === 0) {
-                    setCurrentYear(currentYear - 1);
-                    setCurrentMonth(11);
-                  } else {
-                    setCurrentMonth(currentMonth - 1);
-                  }
-                }}
-              >
-                <LeftOutlined />
-                previous
-              </Button>
-              <Button
-                type="link"
-                style={{ padding: 0, marginLeft: 30 }}
-                onClick={() => {
-                  if (currentMonth === 11) {
-                    setCurrentYear(currentYear + 1);
-                    setCurrentMonth(0);
-                  } else {
-                    setCurrentMonth(currentMonth + 1);
-                  }
-                }}
-              >
-                next
-                <RightOutlined />
-              </Button>
-            </>
-          );
-        }}
+        title={<span style={{ fontSize: 19 }}>{formattedDate}</span>}
+        breadcrumbRender={() => (
+          <MonthNavigation
+            currentMonth={currentMonth}
+            currentYear={currentYear}
+            changeDate={(year, month) => {
+              setCurrentMonth(month);
+              setCurrentYear(year);
+            }}
+          />
+        )}
         subTitle={
           (moment().year() !== currentYear ||
             moment().month() !== currentMonth) && (
@@ -148,7 +123,7 @@ const TimeEntries = () => {
                 setCurrentMonth(moment().month());
               }}
             >
-              jump to current month
+              go to current month
             </Button>
           )
         }
@@ -237,7 +212,7 @@ const TimeEntries = () => {
           <TableLoader />
         )}
       </div>
-    </div>
+    </>
   );
 };
 
