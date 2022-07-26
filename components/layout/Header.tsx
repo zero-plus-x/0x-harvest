@@ -24,9 +24,9 @@ export default function Header() {
           { key: "settings", label: <Link href="/settings">Settings</Link> },
           {
             key: "login",
-            label: !isLoading && (
+            label: (
               <>
-                {data ? (
+                {!router.pathname.startsWith("/login") && data && !isLoading ? (
                   <span
                     title="Logout"
                     onClick={async () => {

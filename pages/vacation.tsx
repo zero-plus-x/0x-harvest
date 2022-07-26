@@ -1,24 +1,13 @@
 import type { NextPage } from "next";
 import moment from "moment";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import {
-  Alert,
-  Button,
-  Col,
-  List,
-  PageHeader,
-  Row,
-  Skeleton,
-  Statistic,
-} from "antd";
+import { Alert, Button, Col, List, PageHeader, Row, Statistic } from "antd";
 import { TimeEntry } from "../types";
 import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
-import { requireAuth } from "../lib/routeGuards";
 import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
 import { useState } from "react";
 import Link from "next/link";
-import TableLoader from "../components/entries/TableLoader";
 
 const Vacation: NextPage = () => {
   const router = useRouter();

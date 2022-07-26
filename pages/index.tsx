@@ -108,8 +108,8 @@ const TimeEntries = () => {
             currentMonth={currentMonth}
             currentYear={currentYear}
             changeDate={(year, month) => {
-              setCurrentMonth(month);
               setCurrentYear(year);
+              setCurrentMonth(month);
             }}
           />
         )}
