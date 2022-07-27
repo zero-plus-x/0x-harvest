@@ -10,7 +10,7 @@ import { useRouter } from "next/dist/client/router";
 import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  res.setHeader("Cache-Control", "public, s-maxage=3600, maxage=7200");
+  res.setHeader("Cache-Control", "public, s-maxage=3600, max-age=7200");
 
   return {
     props: {},
