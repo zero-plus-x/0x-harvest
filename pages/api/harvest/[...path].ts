@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import nookies from "nookies";
 import { HARVEST_API_BASE_URL } from "../../../lib/harvestConfig";
 import * as Sentry from "@sentry/nextjs";
+import { cacheApiResponse } from "../../../lib/caching";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   return new Promise(async () => {
@@ -31,6 +32,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
         if (req.url === "/users/me" && data) {
           Sentry.captureMessage(`Loaded page`, { user: { email: data.email } });
+        } else if (req.url === "/users/me/project_assignments") {
+          cacheApiResponse(res);
         }
         res.status(resp.status).json(data);
       } else {
