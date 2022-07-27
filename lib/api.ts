@@ -162,7 +162,14 @@ export const logout = () => {
 export const useUser = () => {
   const { data, error } = useSWR<User>(
     `${HARVEST_API_URL}/users/me`,
-    (resource, init) => fetch(resource, init).then((res) => res.json())
+    (resource, init) => fetch(resource, init).then((res) => res.json()),
+    {
+      onErrorRetry: (error) => {
+        if (error.status === 401) {
+          return;
+        }
+      },
+    }
   );
   return {
     data,
