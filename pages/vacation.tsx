@@ -5,7 +5,11 @@ import Link from "next/link";
 import { Alert, Button, Col, List, PageHeader, Row, Statistic } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { TimeEntry } from "../types";
-import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
+import {
+  PAID_VACATION_TASK_ID,
+  UNPAID_VACATION_TASK_ID,
+  useTimeEntries,
+} from "../lib/api";
 import { useRouter } from "next/dist/client/router";
 import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
 import { cachePage } from "../lib/caching";
@@ -27,10 +31,16 @@ const Vacation: NextPage = () => {
       year = parsed;
     }
   }
-  const { data: vacationEntries } = useTimeEntries(
+  const { data: paidVacationEntries } = useTimeEntries(
     moment().set("year", year).startOf("year"),
     moment().set("year", year).endOf("year"),
     PAID_VACATION_TASK_ID
+  );
+
+  const { data: unpaidVacationEntries } = useTimeEntries(
+    moment().set("year", year).startOf("year"),
+    moment().set("year", year).endOf("year"),
+    UNPAID_VACATION_TASK_ID
   );
 
   return (
@@ -76,15 +86,23 @@ const Vacation: NextPage = () => {
                 });
               }}
             >
-              jump to current year
+              go to current year
             </Button>
           )
         }
       >
-        <VacationsDaysLeft vacationEntries={vacationEntries} year={year} />
+        <VacationsDaysLeft vacationEntries={paidVacationEntries} year={year} />
       </PageHeader>
-
-      <VacationsDays vacationEntries={vacationEntries} />
+      <VacationsDayList
+        vacationEntries={paidVacationEntries}
+        title="Used paid vacation days"
+      />
+      {(unpaidVacationEntries?.length || 0) > 0 && (
+        <VacationsDayList
+          vacationEntries={unpaidVacationEntries}
+          title="Used unpaid vacation days"
+        />
+      )}
     </>
   );
 };
@@ -123,7 +141,7 @@ const VacationsDaysLeft = ({
         <Col>
           <Statistic
             loading={!vacationEntries}
-            title="Vacation days left this year"
+            title="Paid vacation days left this year"
             value={vacationYearAllowance - (vacationEntries?.length || 0)}
             suffix={` / ${vacationYearAllowance}`}
           />
@@ -133,21 +151,25 @@ const VacationsDaysLeft = ({
   );
 };
 
-const VacationsDays = ({
+const VacationsDayList = ({
   vacationEntries,
+  title,
 }: {
   vacationEntries?: TimeEntry[];
+  title: string;
 }) => {
   return (
     <List
+      header={title}
       loading={!vacationEntries}
       size="small"
       dataSource={vacationEntries?.map((entry) => ({
         date: entry.spent_date,
         notes: entry.notes,
       }))}
+      style={{ paddingLeft: 25 }}
       renderItem={(item) => (
-        <List.Item style={{ padding: "2px 25px" }}>
+        <List.Item style={{ padding: "2px 10px" }}>
           {item.date} {item.notes ? ` - ${item.notes}` : ""}
         </List.Item>
       )}

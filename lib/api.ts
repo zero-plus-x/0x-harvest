@@ -14,6 +14,7 @@ type SpecialTask = {
 };
 
 export const PAID_VACATION_TASK_ID = 6646907;
+export const UNPAID_VACATION_TASK_ID = 6646908;
 export const FALLBACK_HOURS = 8;
 export const HARVEST_DATE_FORMAT = "YYYY-MM-DD";
 
