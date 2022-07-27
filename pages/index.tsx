@@ -180,15 +180,21 @@ const TimeEntries = () => {
                   : day.isBusinessDay
                   ? { marginTop: marginSize, marginBottom: marginSize }
                   : {};
+
+                const commonProps = {
+                  day,
+                  setEntries,
+                  loadMonth,
+                  entries,
+                };
+
                 if (!dayEntries.length) {
                   return (
                     <div key={harvestDate} style={style}>
                       <TimeEntryRow
-                        day={day}
+                        {...commonProps}
                         key={harvestDate}
                         showDate
-                        loadMonth={loadMonth}
-                        setEntries={setEntries}
                       />
                     </div>
                   );
@@ -197,12 +203,10 @@ const TimeEntries = () => {
                   <div key={harvestDate} style={style}>
                     {dayEntries.map((entry, entryIdx) => (
                       <TimeEntryRow
-                        day={day}
+                        {...commonProps}
                         key={entryIdx}
                         entry={entry}
                         showDate={!entryIdx}
-                        loadMonth={loadMonth}
-                        setEntries={setEntries}
                       />
                     ))}
                   </div>
@@ -248,6 +252,7 @@ const TimeEntryRow = ({
   showDate,
   loadMonth,
   setEntries,
+  entries,
 }: {
   day: Day;
   entry?: TimeEntry;
@@ -256,6 +261,7 @@ const TimeEntryRow = ({
   setEntries: (
     fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
   ) => void;
+  entries: TimeEntry[];
 }) => {
   const [loading, setLoading] = useState(false);
   const primaryTask = usePrimaryTask();
@@ -287,31 +293,7 @@ const TimeEntryRow = ({
         )}
       </Col>
       <Col xl={4} md={5} sm={4} xs={6}>
-        {entry && (
-          <Tooltip
-            title={
-              <>
-                Project ID: {entry.project.id}
-                <br />
-                Project Name: {entry.project.name}
-                <br />
-                Task ID: {entry.task.id}
-                <br />
-                Task Name: {entry.task.name}
-              </>
-            }
-          >
-            <div
-              style={{
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-              }}
-            >
-              <TaskName entry={taskInfoFromTimEntry(entry)} />
-            </div>
-          </Tooltip>
-        )}
+        {entry && <TaskNameWithTooltip entry={entry} />}
       </Col>
       <Col xl={9} lg={7} sm={6} xs={9} style={{ textAlign: "center" }}>
         {day.isBusinessDay ? (
@@ -347,8 +329,11 @@ const TimeEntryRow = ({
               .fill(1)
               .map((_, idx) => {
                 const current = day.date.clone().add(idx, "day");
-
-                if (current.month() !== day.date.month()) {
+                const notInThisMonth = current.month() !== day.date.month();
+                const hasTimeEntry = entries.some(
+                  (e) => e.spent_date === current.format(HARVEST_DATE_FORMAT)
+                );
+                if (notInThisMonth || hasTimeEntry) {
                   return;
                 }
                 return current;
@@ -375,21 +360,13 @@ const TimeEntryRow = ({
         {entry && (
           <span className="buttons">
             <Space>
-              <Button
-                danger
-                className="delete-button"
-                icon={<DeleteOutlined />}
-                onClick={async () => {
+              <DeleteEntryButton
+                entry={entry}
+                loadMonth={loadMonth}
+                onDeleteSuccess={() => {
                   setEntries((entries) =>
                     entries?.filter((e) => e.id !== entry.id)
                   );
-                  const response = await deleteTimeEntry(entry.id);
-                  if (response.status === 200) {
-                    message.success("Entry deleted!");
-                  } else {
-                    message.error("Something went wrong while deleting entry.");
-                    await loadMonth();
-                  }
                 }}
               />
               <CreateEntryButton
@@ -403,6 +380,62 @@ const TimeEntryRow = ({
         )}
       </Col>
     </Row>
+  );
+};
+
+const DeleteEntryButton = ({
+  loadMonth,
+  entry,
+  onDeleteSuccess,
+}: {
+  loadMonth: () => Promise<void>;
+  onDeleteSuccess: () => void;
+  entry: TimeEntry;
+}) => {
+  return (
+    <Button
+      danger
+      className="delete-button"
+      icon={<DeleteOutlined />}
+      onClick={async () => {
+        const response = await deleteTimeEntry(entry.id);
+        if (response.status === 200) {
+          message.success("Entry deleted!");
+          onDeleteSuccess();
+        } else {
+          message.error("Something went wrong while deleting entry.");
+          await loadMonth();
+        }
+      }}
+    />
+  );
+};
+
+const TaskNameWithTooltip = ({ entry }: { entry: TimeEntry }) => {
+  return (
+    <Tooltip
+      title={
+        <>
+          Project ID: {entry.project.id}
+          <br />
+          Project Name: {entry.project.name}
+          <br />
+          Task ID: {entry.task.id}
+          <br />
+          Task Name: {entry.task.name}
+        </>
+      }
+    >
+      <div
+        style={{
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+        }}
+      >
+        <TaskName entry={taskInfoFromTimEntry(entry)} />
+      </div>
+    </Tooltip>
   );
 };
 
