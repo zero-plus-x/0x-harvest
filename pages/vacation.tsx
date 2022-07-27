@@ -1,13 +1,21 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import moment from "moment";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import Link from "next/link";
 import { Alert, Button, Col, List, PageHeader, Row, Statistic } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { TimeEntry } from "../types";
 import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
 import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
-import { useState } from "react";
-import Link from "next/link";
+
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  res.setHeader("Cache-Control", "public, s-maxage=3600, maxage=7200");
+
+  return {
+    props: {},
+  };
+};
 
 const Vacation: NextPage = () => {
   const router = useRouter();
