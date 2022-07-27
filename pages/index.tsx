@@ -1,50 +1,24 @@
-import { useMemo, useState } from "react";
-import type { GetServerSideProps, NextPage } from "next";
-import moment from "moment";
+import { Button, Col, PageHeader, Row, Space } from "antd";
 import classnames from "classnames";
-import { DeleteOutlined, LikeOutlined, PlusOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Dropdown,
-  Input,
-  Menu,
-  PageHeader,
-  Statistic,
-  message,
-  Tooltip,
-  Row,
-  Col,
-  InputNumber,
-  Space,
-} from "antd";
+import moment from "moment";
+import type { GetServerSideProps, NextPage } from "next";
+import { useMemo, useState } from "react";
 import { useSWRConfig } from "swr";
-import {
-  Day,
-  getDaysInMonthRange,
-  isSoftwareDevTask,
-  taskInfoFromTimEntry,
-  usePrimaryTask,
-  weekdaysInMonth,
-} from "../utils";
-import { TimeEntry } from "../types";
-import {
-  createTimeEntry,
-  deleteTimeEntry,
-  FALLBACK_HOURS,
-  HARVEST_DATE_FORMAT,
-  specialTasks,
-  updateTimeEntryHours,
-  updateTimeEntryNote,
-  useProjectAssignments,
-  useTimeEntries,
-} from "../lib/api";
-import TableLoader from "../components/entries/TableLoader";
-import TaskHoursStatistic from "../components/entries/TaskHoursStatistic";
-import TaskName from "../components/entries/TaskName";
+import CreateEntryButton from "../components/entries/CreateEntryButton";
+import DeleteEntryButton from "../components/entries/DeleteEntryButton";
+import EntryNoteInput from "../components/entries/EntryNoteInput";
+import EntryTimeInput from "../components/entries/EntryTimeInput";
 import FillEntriesButton from "../components/entries/FillEntriesButton";
 import FillMonthButton from "../components/entries/FillMonthButton";
+import LoggedHoursStatistic from "../components/entries/LoggedHoursStatistic";
 import MonthNavigation from "../components/entries/MonthNavigation";
+import TableLoader from "../components/entries/TableLoader";
+import TaskHoursStatistic from "../components/entries/TaskHoursStatistic";
+import TaskNameWithTooltip from "../components/entries/TaskNameWithTooltip";
+import { HARVEST_DATE_FORMAT, useTimeEntries } from "../lib/api";
 import { cachePage } from "../lib/caching";
+import { TimeEntry } from "../types";
+import { Day, getDaysInMonthRange, usePrimaryTask } from "../utils";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   cachePage(res);
@@ -222,30 +196,6 @@ const TimeEntries = () => {
   );
 };
 
-const LoggedHoursStatistic = ({
-  date,
-  entries,
-}: {
-  date: moment.Moment;
-  entries?: TimeEntry[];
-}) => {
-  const hoursInMonth = weekdaysInMonth(date.year(), date.month()) * 8;
-  const trackedHoursInMonth = entries?.reduce(
-    (acc, entry) => acc + entry.hours,
-    0
-  );
-
-  return (
-    <Statistic
-      loading={!entries}
-      title="Total logged hours"
-      value={trackedHoursInMonth}
-      suffix={` / ${hoursInMonth}`}
-      prefix={(trackedHoursInMonth || 0) >= hoursInMonth && <LikeOutlined />}
-    />
-  );
-};
-
 const TimeEntryRow = ({
   day,
   entry,
@@ -380,280 +330,5 @@ const TimeEntryRow = ({
         )}
       </Col>
     </Row>
-  );
-};
-
-const DeleteEntryButton = ({
-  loadMonth,
-  entry,
-  onDeleteSuccess,
-}: {
-  loadMonth: () => Promise<void>;
-  onDeleteSuccess: () => void;
-  entry: TimeEntry;
-}) => {
-  return (
-    <Button
-      danger
-      className="delete-button"
-      icon={<DeleteOutlined />}
-      onClick={async () => {
-        const response = await deleteTimeEntry(entry.id);
-        if (response.status === 200) {
-          message.success("Entry deleted!");
-          onDeleteSuccess();
-        } else {
-          message.error("Something went wrong while deleting entry.");
-          await loadMonth();
-        }
-      }}
-    />
-  );
-};
-
-const TaskNameWithTooltip = ({ entry }: { entry: TimeEntry }) => {
-  return (
-    <Tooltip
-      title={
-        <>
-          Project ID: {entry.project.id}
-          <br />
-          Project Name: {entry.project.name}
-          <br />
-          Task ID: {entry.task.id}
-          <br />
-          Task Name: {entry.task.name}
-        </>
-      }
-    >
-      <div
-        style={{
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-        }}
-      >
-        <TaskName entry={taskInfoFromTimEntry(entry)} />
-      </div>
-    </Tooltip>
-  );
-};
-
-const EntryTimeInput = ({
-  entry,
-  loadMonth,
-  setEntries,
-}: {
-  entry: TimeEntry;
-  loadMonth: () => Promise<void>;
-  setEntries: (
-    fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
-  ) => void;
-}) => {
-  const [value, setValue] = useState(entry.hours);
-
-  return (
-    <InputNumber
-      min={0.25}
-      max={24}
-      inputMode="decimal"
-      addonAfter={
-        <>
-          <span>h</span>
-          <span className="hide-below-md">ours</span>
-        </>
-      }
-      defaultValue={entry?.hours}
-      style={{ marginTop: 2, maxWidth: 130 }}
-      value={value}
-      onChange={(newValue) => setValue(newValue)}
-      onBlur={async () => {
-        if (value === entry.hours) {
-          return;
-        }
-
-        const response = await updateTimeEntryHours(entry.id, value);
-        if (response.status === 200) {
-          message.success("Time updated!");
-
-          setEntries((prevEntries) => {
-            if (!prevEntries) {
-              return prevEntries;
-            }
-            const entriesCopy = [...prevEntries];
-            const updatedEntryIdx = entriesCopy.findIndex(
-              (e) => e.id === response.data.id
-            );
-            entriesCopy[updatedEntryIdx] = response.data;
-            return entriesCopy;
-          });
-        } else {
-          message.error("Something went wrong while updating time.");
-          await loadMonth();
-        }
-      }}
-    />
-  );
-};
-
-const EntryNoteInput = ({
-  entry,
-  loadMonth,
-  setEntries,
-}: {
-  entry: TimeEntry;
-  loadMonth: () => Promise<void>;
-  setEntries: (
-    fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
-  ) => void;
-}) => {
-  const [notes, setNotes] = useState(entry.notes || "");
-  const [loading, setLoading] = useState(false);
-
-  return (
-    <>
-      <Input
-        disabled={loading}
-        value={notes}
-        onChange={(e) => setNotes(e.currentTarget.value)}
-        placeholder="Notes"
-        onBlur={async () => {
-          if (notes === entry.notes) {
-            return;
-          }
-          setLoading(true);
-          const response = await updateTimeEntryNote(entry.id, notes);
-          setLoading(false);
-          if (response.status === 200) {
-            message.success("Note saved!");
-            setEntries((prevEntries) => {
-              if (!prevEntries) {
-                return prevEntries;
-              }
-              const entriesCopy = [...prevEntries];
-              const updatedEntryIdx = entriesCopy.findIndex(
-                (e) => e.id === response.data.id
-              );
-              entriesCopy[updatedEntryIdx] = response.data;
-              return entriesCopy;
-            });
-          } else {
-            message.error("Something went wrong while saving note.");
-            await loadMonth();
-          }
-        }}
-      />
-    </>
-  );
-};
-
-const CreateEntryButton = ({
-  day,
-  loadMonth,
-  setEntries,
-  type,
-}: {
-  day: Day;
-  loadMonth: () => Promise<void>;
-  setEntries: (
-    fn: (e: TimeEntry[] | undefined) => TimeEntry[] | undefined
-  ) => void;
-  type?: "regular" | "small";
-}) => {
-  const [loading, setLoading] = useState(false);
-
-  const primaryTask = usePrimaryTask();
-  const { data: projectAssignments } = useProjectAssignments();
-
-  const createEntry = async (
-    projectId: number,
-    taskId: number,
-    hours?: number
-  ) => {
-    setLoading(true);
-    const response = await createTimeEntry(
-      day.date.format(HARVEST_DATE_FORMAT),
-      projectId,
-      taskId,
-      hours
-    );
-    setLoading(false);
-    if (response.status === 201) {
-      message.success("New entry created!");
-
-      setEntries((prevEntries) => {
-        if (!prevEntries) {
-          return prevEntries;
-        }
-        return [...prevEntries, response.data].sort((a, b) =>
-          b.spent_date.localeCompare(a.spent_date)
-        );
-      });
-    } else {
-      message.error("Something went wrong while creating entry.");
-      await loadMonth();
-    }
-  };
-
-  const menu = (
-    <Menu
-      items={projectAssignments?.map((p) => ({
-        key: p.project.id,
-        label: p.project.name,
-        type: "group",
-        children: p.task_assignments.map((t) => {
-          const override = specialTasks[t.task.id];
-          return {
-            key: t.task.id,
-            onClick: () => createEntry(p.project.id, t.task.id, FALLBACK_HOURS),
-            label: (
-              <>
-                {t.task.name} {override?.emoji}{" "}
-                {primaryTask?.taskId === t.task.id ? (
-                  <>
-                    (current <i>work</i>)
-                  </>
-                ) : null}
-              </>
-            ),
-          };
-        }),
-      }))}
-    />
-  );
-
-  if (type === "small") {
-    return (
-      <Dropdown overlay={menu}>
-        <Button>
-          <PlusOutlined />
-        </Button>
-      </Dropdown>
-    );
-  }
-  return (
-    <Dropdown.Button
-      overlay={menu}
-      disabled={loading}
-      onClick={async () => {
-        if (primaryTask) {
-          await createEntry(
-            primaryTask.projectId,
-            primaryTask.taskId,
-            FALLBACK_HOURS
-          );
-        }
-      }}
-    >
-      <PlusOutlined /> {FALLBACK_HOURS}&nbsp;
-      <>
-        <span>h</span>
-        <span className="hide-below-md">our</span>
-      </>
-      &nbsp;
-      {isSoftwareDevTask(primaryTask?.taskName)
-        ? "work"
-        : primaryTask?.taskName}
-    </Dropdown.Button>
   );
 };
