@@ -1,5 +1,13 @@
 import { Button, PageHeader, Typography } from "antd";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
+import { cachePage } from "../lib/caching";
+
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  cachePage(res);
+  return {
+    props: {},
+  };
+};
 
 const Login: NextPage = () => {
   return (

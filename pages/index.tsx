@@ -2,13 +2,7 @@ import { useMemo, useState } from "react";
 import type { GetServerSideProps, NextPage } from "next";
 import moment from "moment";
 import classnames from "classnames";
-import {
-  DeleteOutlined,
-  LeftOutlined,
-  LikeOutlined,
-  PlusOutlined,
-  RightOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, LikeOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Dropdown,
