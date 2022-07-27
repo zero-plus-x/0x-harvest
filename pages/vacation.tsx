@@ -8,10 +8,10 @@ import { TimeEntry } from "../types";
 import { PAID_VACATION_TASK_ID, useTimeEntries } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
 import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
+import { cachePage } from "../lib/caching";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  res.setHeader("Cache-Control", "public, s-maxage=3600, max-age=7200");
-
+  cachePage(res);
   return {
     props: {},
   };
