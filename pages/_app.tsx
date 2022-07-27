@@ -8,8 +8,26 @@ import {
   UserSettingsStore,
   UserSettingsStoreContext,
 } from "../stores/UserSettingsStore";
+import { useUser } from "../lib/api";
+import { useRouter } from "next/router";
+
+const publicPaths = ["/login"];
 
 function App({ Component, pageProps }: AppProps) {
+  const { isError } = useUser();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (isError) {
+      const path = router.asPath.split("?")[0];
+      if (!publicPaths.includes(path)) {
+        router.push({
+          pathname: "/login",
+        });
+      }
+    }
+  }, [isError, router]);
+
   return (
     <>
       <Head>
