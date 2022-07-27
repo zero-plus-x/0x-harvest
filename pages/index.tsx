@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import moment from "moment";
 import classnames from "classnames";
 import {
@@ -50,6 +50,14 @@ import TaskName from "../components/entries/TaskName";
 import FillEntriesButton from "../components/entries/FillEntriesButton";
 import FillMonthButton from "../components/entries/FillMonthButton";
 import MonthNavigation from "../components/entries/MonthNavigation";
+import { cachePage } from "../lib/caching";
+
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  cachePage(res);
+  return {
+    props: {},
+  };
+};
 
 const Home: NextPage = () => {
   return <TimeEntries />;
