@@ -11,7 +11,7 @@ export const cachePage = (res: ServerResponse) => {
 
 export const cacheApiResponse = (
   res: NextApiResponse,
-  seconds: number = 60
+  seconds: number = 60 * 60 // 1 hour
 ) => {
   res.setHeader("Cache-Control", `private, max-age=${seconds}`);
 };

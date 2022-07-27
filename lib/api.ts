@@ -1,6 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { ProjectAssignment, TimeEntry, User } from "../types";
 
 const HARVEST_API_URL = "/api/harvest";
@@ -109,7 +110,7 @@ export const useTimeEntries = (
 export const useProjectAssignments = () => {
   const cacheKey = `${HARVEST_API_URL}/users/me/project_assignments`;
 
-  const { data, error } = useSWR<ProjectAssignment[]>(
+  const { data, error } = useSWRImmutable<ProjectAssignment[]>(
     cacheKey,
     (resource, init) =>
       fetch(resource, init)
@@ -160,7 +161,7 @@ export const logout = () => {
 };
 
 export const useUser = () => {
-  const { data, error } = useSWR<User>(
+  const { data, error } = useSWRImmutable<User>(
     `${HARVEST_API_URL}/users/me`,
     (resource, init) => fetch(resource, init).then((res) => res.json()),
     {
