@@ -1,10 +1,6 @@
 name: "Prod deploy"
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+on: push
 
 jobs:
   test:
@@ -22,7 +18,7 @@ jobs:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - run: yarn install
+      - run: yarn --frozen-lockfile
       - run: npx playwright install --with-deps
       - run: yarn lint
       - run: yarn test:ci
