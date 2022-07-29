@@ -23,9 +23,10 @@ jobs:
         uses: actions/cache@v2
         id: playwright-cache
         with:
+          # keep the version in key in sync with package.json
           path: |
             ~/.cache/ms-playwright
-          key: cache-playwright-linux-1.19.2
+          key: cache-playwright-linux-1.24.1
 
       - run: yarn --frozen-lockfile
 
