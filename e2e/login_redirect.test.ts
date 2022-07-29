@@ -9,6 +9,6 @@ test("should redirect to the login page and back after logging in", async ({
 
   await page.locator("#e2e-test-login").click();
   await page.locator(".ant-avatar").waitFor();
-  await expect(page.locator(".ant-avatar")).toBeVisible();
+  await expect(page.locator("text=Fill empty days with work")).toBeVisible();
   await expect(page).toHaveURL("/");
 });
