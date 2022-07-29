@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TaskName renders a correct name for a regular task 1`] = `
+<div>
+  Cool Task
+</div>
+`;
+
+exports[`TaskName renders a correct name for a special task 1`] = `
+<div>
+  🎅
+   
+  Cool Task
+   
+  🎅
+</div>
+`;
+
+exports[`TaskName renders a correct name for software dev task 1`] = `
+<div>
+  Work (
+  Test Project
+  )
+</div>
+`;

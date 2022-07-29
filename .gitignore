@@ -34,3 +34,7 @@ tsconfig.tsbuildinfo
 
 # vercel
 .vercel
+/test-results
+
+# IDE
+.vscode
