@@ -13,15 +13,30 @@ jobs:
           node-version: 16
 
       # https://dev.to/mattpocock/how-to-cache-nodemodules-in-github-actions-with-yarn-24eh
-      - uses: actions/cache@v2
+      - name: Cache node_modules
+        uses: actions/cache@v2
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
+      - name: Cache playwright binaries
+        uses: actions/cache@v2
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: cache-playwright-linux-1.19.2
+
       - run: yarn --frozen-lockfile
-      - run: npx playwright install --with-deps
+
+      - name: Install Playwright
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
       - run: yarn lint
+
       - run: yarn test:ci
+
       - run: yarn test:e2e
 
   deploy:
