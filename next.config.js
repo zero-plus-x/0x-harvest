@@ -11,4 +11,7 @@ const sentryWebpackPluginOptions = {
   silent: true,
 };
 
-module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+const config = process.env.NEXT_PUBLIC_E2E
+  ? moduleExports
+  : withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+module.exports = config;

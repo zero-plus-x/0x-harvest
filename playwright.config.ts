@@ -11,20 +11,18 @@ const config: PlaywrightTestConfig = {
   retries: 2,
   outputDir: "test-results/",
   webServer: {
-    command: "yarn dev",
+    // testing against prod build
+    command: "yarn build && yarn start",
     url: baseURL,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
+    env: {
+      NEXT_PUBLIC_E2E: "true",
+    },
   },
   use: {
     baseURL,
-
     trace: "retry-with-trace",
-
-    // All available context options: https://playwright.dev/docs/api/class-browser#browser-new-context
-    // contextOptions: {
-    //   ignoreHTTPSErrors: true,
-    // },
   },
 
   projects: [

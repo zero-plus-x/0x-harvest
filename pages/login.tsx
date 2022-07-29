@@ -19,14 +19,14 @@ const Login: NextPage = () => {
       <Button onClick={() => window.location.replace("/api/oauth2")}>
         Log in with Harvest
       </Button>
-      {process.env.NODE_ENV !== "production" && (
+      {process.env.NEXT_PUBLIC_E2E && (
         <div>
           <br />
           <Button
             onClick={() => window.location.replace("/api/e2e-test-login")}
             id="e2e-test-login"
           >
-            mock server login (hidden in prod)
+            mock server login
           </Button>
         </div>
       )}
