@@ -3,15 +3,18 @@ import nookies from "nookies";
 import { HARVEST_API_BASE_URL } from "../../../lib/harvestConfig";
 import * as Sentry from "@sentry/nextjs";
 import { cacheApiResponse } from "../../../lib/caching";
+import { FAKE_HARVEST_TOKEN } from "../../../lib/testUtils";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   return new Promise(async () => {
+    const cookies = nookies.get({ req });
+    if (cookies.HARVEST_ACCESS_TOKEN === FAKE_HARVEST_TOKEN) {
+      return handleMockRequest(req, res);
+    }
     const oldUrl = req.url;
     req.url = oldUrl?.replace(/^\/api\/harvest/, "");
 
     console.log(`Proxy rewrite ${oldUrl} -> ${req.url}`);
-
-    const cookies = nookies.get({ req });
 
     if (cookies.HARVEST_ACCESS_TOKEN && cookies.HARVEST_ACCOUNT_ID) {
       const resp = await fetch(`${HARVEST_API_BASE_URL}/${req.url}`, {
@@ -49,3 +52,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export default Sentry.withSentry(handler);
+
+const handleMockRequest = (req: NextApiRequest, res: NextApiResponse) => {
+  return res.status(200).json({ test: "xx" });
+};
