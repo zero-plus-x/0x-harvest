@@ -27,7 +27,7 @@ export default async function handler(
         headers: baseHeaders,
       }
     );
-    // we verify whether this account belongs to Hyper One later
+    // we verify whether this account belongs to 0+x later
     // TODO: Do some people have more than one account?
     const account = accounts.data.accounts[0];
 
