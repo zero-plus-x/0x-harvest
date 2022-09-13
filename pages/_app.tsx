@@ -11,7 +11,7 @@ import {
 import { useUser } from "../lib/api";
 import { useRouter } from "next/router";
 
-const publicPaths = ["/login"];
+const publicPaths = ["/login", "/not-us"];
 
 function App({ Component, pageProps }: AppProps) {
   const { isError } = useUser();
