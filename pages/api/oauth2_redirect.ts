@@ -1,6 +1,7 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { setCookie } from "nookies";
+import * as Sentry from "@sentry/nextjs";
 import {
   HARVEST_API_BASE_URL,
   HARVEST_ID_API_BASE_URL,
@@ -52,6 +53,10 @@ export default async function handler(
         setCookie({ res }, "HARVEST_ACCOUNT_ID", account.id + "", config);
 
         return res.redirect("/");
+      } else {
+        Sentry.captureMessage(
+          `Somebody from ${company.data.full_domain} tried to log in.`
+        );
       }
     }
   }

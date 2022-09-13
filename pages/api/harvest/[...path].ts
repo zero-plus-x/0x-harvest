@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nookies from "nookies";
-import { HARVEST_API_BASE_URL } from "../../../lib/harvestConfig";
 import * as Sentry from "@sentry/nextjs";
+import { HARVEST_API_BASE_URL } from "../../../lib/harvestConfig";
 import { cacheApiResponse } from "../../../lib/caching";
 import { FAKE_HARVEST_TOKEN } from "../../../lib/testUtils";
 
