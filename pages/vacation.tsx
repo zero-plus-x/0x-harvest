@@ -8,6 +8,7 @@ import { TimeEntry } from "../types";
 import {
   PAID_VACATION_TASK_ID,
   UNPAID_VACATION_TASK_ID,
+  VACATION_TASK_ID,
   useTimeEntries,
 } from "../lib/api";
 import { useRouter } from "next/dist/client/router";
@@ -37,11 +38,22 @@ const Vacation: NextPage = () => {
     PAID_VACATION_TASK_ID
   );
 
+  const { data: vacationEntries } = useTimeEntries(
+    moment().set("year", year).startOf("year"),
+    moment().set("year", year).endOf("year"),
+    VACATION_TASK_ID
+  );
+
   const { data: unpaidVacationEntries } = useTimeEntries(
     moment().set("year", year).startOf("year"),
     moment().set("year", year).endOf("year"),
     UNPAID_VACATION_TASK_ID
   );
+
+  const groupedEntries = [
+    ...(vacationEntries || []),
+    ...(paidVacationEntries || []),
+  ].sort((a, b) => b.spent_date.localeCompare(a.spent_date));
 
   return (
     <>
@@ -91,11 +103,11 @@ const Vacation: NextPage = () => {
           )
         }
       >
-        <VacationsDaysLeft vacationEntries={paidVacationEntries} year={year} />
+        <VacationsDaysLeft vacationEntries={groupedEntries} year={year} />
       </PageHeader>
       <VacationsDayList
-        vacationEntries={paidVacationEntries}
-        title="Used paid vacation days"
+        vacationEntries={groupedEntries}
+        title="Used vacation days"
       />
       {(unpaidVacationEntries?.length || 0) > 0 && (
         <VacationsDayList
@@ -141,7 +153,7 @@ const VacationsDaysLeft = ({
         <Col>
           <Statistic
             loading={!vacationEntries}
-            title="Paid vacation days left this year"
+            title="Vacation days left this year"
             value={vacationYearAllowance - (vacationEntries?.length || 0)}
             suffix={` / ${vacationYearAllowance}`}
           />

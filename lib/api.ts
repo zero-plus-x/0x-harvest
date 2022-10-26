@@ -14,6 +14,7 @@ type SpecialTask = {
 };
 
 export const PAID_VACATION_TASK_ID = 6646907;
+export const VACATION_TASK_ID = 2595366;
 export const UNPAID_VACATION_TASK_ID = 6646908;
 export const FALLBACK_HOURS = 8;
 export const HARVEST_DATE_FORMAT = "YYYY-MM-DD";
@@ -25,7 +26,11 @@ export const projects: Record<number, string> = {
 
 export const specialTasks: { [taskId: number]: SpecialTask } = {
   [PAID_VACATION_TASK_ID]: {
-    // "Paid vacation"
+    // "Paid vacation" - deprecated as of 2022/10
+    emoji: "🏖️",
+  },
+  [VACATION_TASK_ID]: {
+    // "Vacation"
     emoji: "🏖️",
   },
   8114249: {
@@ -41,7 +46,7 @@ export const specialTasks: { [taskId: number]: SpecialTask } = {
     emoji: "🤢",
   },
   6646908: {
-    // "Unpaid vacation"
+    // "Unpaid vacation" - deprecated as of 2022/10
     emoji: "⏸",
   },
   6646905: {
