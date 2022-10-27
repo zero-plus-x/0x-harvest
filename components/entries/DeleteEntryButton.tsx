@@ -18,12 +18,17 @@ const DeleteEntryButton = ({
       className="delete-button"
       icon={<DeleteOutlined />}
       onClick={async () => {
-        const response = await deleteTimeEntry(entry.id);
-        if (response.status === 200) {
-          message.success("Entry deleted!");
-          onDeleteSuccess();
-        } else {
-          message.error("Something went wrong while deleting entry.");
+        try {
+          const response = await deleteTimeEntry(entry.id);
+
+          if (response.status === 200) {
+            message.success("Entry deleted!");
+            onDeleteSuccess();
+          } else {
+            throw new Error(`Error code ${response.status}.`);
+          }
+        } catch (e) {
+          message.error("Something went wrong while deleting the entry.");
           await loadMonth();
         }
       }}
