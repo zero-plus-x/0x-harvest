@@ -18,6 +18,7 @@ const EntryTimeInput = ({
 
   return (
     <InputNumber
+      disabled={entry.is_locked}
       min={0.25}
       max={24}
       inputMode="decimal"

@@ -15,6 +15,8 @@ const DeleteEntryButton = ({
   return (
     <Button
       danger
+      disabled={entry.is_locked}
+      title={entry.locked_reason}
       className="delete-button"
       icon={<DeleteOutlined />}
       onClick={async () => {

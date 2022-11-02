@@ -5,6 +5,8 @@ export type TimeEntry = {
   hours: number;
   project: { id: number; name: string };
   task: { id: number; name: string };
+  is_locked: boolean;
+  locked_reason?: string;
 };
 
 export type Project = {
