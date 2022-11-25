@@ -19,14 +19,14 @@ jobs:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Cache playwright binaries
-        uses: actions/cache@v3
-        id: playwright-cache
-        with:
-          # keep the version in key in sync with package.json
-          path: |
-            ~/.cache/ms-playwright
-          key: cache-playwright-linux-1.27.1
+      # - name: Cache playwright binaries
+      #   uses: actions/cache@v3
+      #   id: playwright-cache
+      #   with:
+      #     # keep the version in key in sync with package.json
+      #     path: |
+      #       ~/.cache/ms-playwright
+      #     key: cache-playwright-linux-1.27.1
 
       - run: yarn --frozen-lockfile
 
