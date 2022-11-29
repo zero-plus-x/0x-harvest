@@ -31,7 +31,11 @@ const EntryTimeInput = ({
       defaultValue={entry?.hours}
       style={{ marginTop: 2, maxWidth: 130 }}
       value={value}
-      onChange={(newValue) => setValue(newValue)}
+      onChange={(newValue) => {
+        if (newValue !== null) {
+          setValue(newValue);
+        }
+      }}
       onBlur={async () => {
         if (value === entry.hours) {
           return;
