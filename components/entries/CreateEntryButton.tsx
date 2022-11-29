@@ -96,29 +96,31 @@ const CreateEntryButton = ({
     );
   }
   return (
-    <Dropdown.Button
-      overlay={menu}
-      disabled={loading}
-      onClick={async () => {
-        if (primaryTask) {
-          await createEntry(
-            primaryTask.projectId,
-            primaryTask.taskId,
-            FALLBACK_HOURS
-          );
-        }
-      }}
-    >
-      <PlusOutlined /> {FALLBACK_HOURS}&nbsp;
-      <>
-        <span>h</span>
-        <span className="hide-below-md">our</span>
-      </>
-      &nbsp;
-      {isSoftwareDevTask(primaryTask?.taskName)
-        ? "work"
-        : primaryTask?.taskName}
-    </Dropdown.Button>
+    <div>
+      <Dropdown.Button
+        overlay={menu}
+        disabled={loading}
+        onClick={async () => {
+          if (primaryTask) {
+            await createEntry(
+              primaryTask.projectId,
+              primaryTask.taskId,
+              FALLBACK_HOURS
+            );
+          }
+        }}
+      >
+        <PlusOutlined /> {FALLBACK_HOURS}&nbsp;
+        <>
+          <span>h</span>
+          <span className="hide-below-md">our</span>
+        </>
+        &nbsp;
+        {isSoftwareDevTask(primaryTask?.taskName)
+          ? "work"
+          : primaryTask?.taskName}
+      </Dropdown.Button>
+    </div>
   );
 };
 

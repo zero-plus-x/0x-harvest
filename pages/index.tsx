@@ -85,19 +85,22 @@ const TimeEntries = () => {
           setCurrentMonth(month);
         }}
       />
-      <Typography.Title level={4}>{formattedDate}</Typography.Title>
-      {(moment().year() !== currentYear ||
-        moment().month() !== currentMonth) && (
-        <Button
-          type="link"
-          onClick={() => {
-            setCurrentYear(moment().year());
-            setCurrentMonth(moment().month());
-          }}
-        >
-          go to current month
-        </Button>
-      )}
+      <Typography.Title level={4}>
+        {formattedDate}{" "}
+        {(moment().year() !== currentYear ||
+          moment().month() !== currentMonth) && (
+          <Button
+            type="link"
+            onClick={() => {
+              setCurrentYear(moment().year());
+              setCurrentMonth(moment().month());
+            }}
+          >
+            go to current month
+          </Button>
+        )}
+      </Typography.Title>
+
       <Row>
         <Col lg={5} sm={8} xs={12}>
           <LoggedHoursStatistic date={currentDate} entries={entries} />
@@ -238,7 +241,16 @@ const TimeEntryRow = ({
       <Col xl={4} md={5} sm={4} xs={6}>
         {entry && <TaskNameWithTooltip entry={entry} />}
       </Col>
-      <Col xl={9} lg={7} sm={6} xs={9} style={{ textAlign: "center" }}>
+      <Col
+        xl={9}
+        lg={7}
+        sm={6}
+        xs={9}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         {day.isBusinessDay ? (
           entry ? (
             <EntryNoteInput

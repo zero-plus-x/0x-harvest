@@ -82,21 +82,23 @@ const Vacation: NextPage = () => {
           <RightOutlined />
         </Button>
       </>
-      <Typography.Title level={4}>Year {year}</Typography.Title>
-      <>
-        {moment().year() !== year && (
-          <Button
-            type="link"
-            onClick={() => {
-              router.push(`/vacation?year=${moment().year()}`, undefined, {
-                shallow: true,
-              });
-            }}
-          >
-            go to current year
-          </Button>
-        )}
-      </>
+      <Typography.Title level={4}>
+        Year {year}{" "}
+        <>
+          {moment().year() !== year && (
+            <Button
+              type="link"
+              onClick={() => {
+                router.push(`/vacation?year=${moment().year()}`, undefined, {
+                  shallow: true,
+                });
+              }}
+            >
+              go to current year
+            </Button>
+          )}
+        </>
+      </Typography.Title>
 
       <VacationsDaysLeft vacationEntries={groupedEntries} year={year} />
       <VacationsDayList
