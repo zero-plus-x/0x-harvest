@@ -1,5 +1,6 @@
 import React from "react";
 import { Col, Layout, Row } from "antd";
+import { GithubOutlined } from "@ant-design/icons";
 import Header from "./Header";
 
 export default function CommonLayout({
@@ -27,6 +28,16 @@ export default function CommonLayout({
           <Col xxl={5} xl={4} lg={2} md={2} sm={1} xs={0}></Col>
         </Row>
       </Layout.Content>
+      <Layout.Footer style={{ textAlign: "center" }}>
+        Feature requests and bug reports welcome at GitHub{" "}
+        <a
+          href="https://github.com/jakubkottnauer/0x-harvest"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <GithubOutlined />
+        </a>
+      </Layout.Footer>
     </Layout>
   );
 }
