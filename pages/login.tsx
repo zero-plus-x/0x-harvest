@@ -1,4 +1,4 @@
-import { Button, PageHeader, Typography } from "antd";
+import { Button, Typography } from "antd";
 import type { GetServerSideProps, NextPage } from "next";
 import { cachePage } from "../lib/caching";
 
@@ -11,7 +11,8 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 
 const Login: NextPage = () => {
   return (
-    <PageHeader title="Welcome 0+x-er!">
+    <Typography>
+      <Typography.Title>Welcome 0+x-er!</Typography.Title>
       <Typography.Paragraph>
         This new Harvest frontend will hopefully make tracking your worked hours
         a breeze. To start, click the button below to log in through Harvest.
@@ -30,7 +31,7 @@ const Login: NextPage = () => {
           </Button>
         </div>
       )}
-    </PageHeader>
+    </Typography>
   );
 };
 

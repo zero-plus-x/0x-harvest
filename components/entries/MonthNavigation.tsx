@@ -26,7 +26,7 @@ const MonthNavigation = ({
   };
 
   return (
-    <>
+    <div>
       <Button type="link" style={{ padding: 0 }} onClick={goToPreviousMonth}>
         <LeftOutlined />
         previous
@@ -39,7 +39,7 @@ const MonthNavigation = ({
         next
         <RightOutlined />
       </Button>
-    </>
+    </div>
   );
 };
 

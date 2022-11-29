@@ -2,7 +2,7 @@ import type { GetServerSideProps, NextPage } from "next";
 import moment from "moment";
 import { useState } from "react";
 import Link from "next/link";
-import { Alert, Button, Col, List, PageHeader, Row, Statistic } from "antd";
+import { Alert, Button, Col, List, Row, Statistic, Typography } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { TimeEntry } from "../types";
 import {
@@ -57,54 +57,48 @@ const Vacation: NextPage = () => {
 
   return (
     <>
-      <PageHeader
-        title={`Year ${year}`}
-        breadcrumbRender={() => {
-          return (
-            <>
-              <Button
-                type="link"
-                style={{ padding: 0 }}
-                onClick={() => {
-                  router.push(`/vacation?year=${year - 1}`, undefined, {
-                    shallow: true,
-                  });
-                }}
-              >
-                <LeftOutlined />
-                previous
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  router.push(`/vacation?year=${year + 1}`, undefined, {
-                    shallow: true,
-                  });
-                }}
-              >
-                next
-                <RightOutlined />
-              </Button>
-            </>
-          );
-        }}
-        subTitle={
-          moment().year() !== year && (
-            <Button
-              type="link"
-              onClick={() => {
-                router.push(`/vacation?year=${moment().year()}`, undefined, {
-                  shallow: true,
-                });
-              }}
-            >
-              go to current year
-            </Button>
-          )
-        }
-      >
-        <VacationsDaysLeft vacationEntries={groupedEntries} year={year} />
-      </PageHeader>
+      <>
+        <Button
+          type="link"
+          style={{ padding: 0 }}
+          onClick={() => {
+            router.push(`/vacation?year=${year - 1}`, undefined, {
+              shallow: true,
+            });
+          }}
+        >
+          <LeftOutlined />
+          previous
+        </Button>
+        <Button
+          type="link"
+          onClick={() => {
+            router.push(`/vacation?year=${year + 1}`, undefined, {
+              shallow: true,
+            });
+          }}
+        >
+          next
+          <RightOutlined />
+        </Button>
+      </>
+      <Typography.Title level={4}>Year {year}</Typography.Title>
+      <>
+        {moment().year() !== year && (
+          <Button
+            type="link"
+            onClick={() => {
+              router.push(`/vacation?year=${moment().year()}`, undefined, {
+                shallow: true,
+              });
+            }}
+          >
+            go to current year
+          </Button>
+        )}
+      </>
+
+      <VacationsDaysLeft vacationEntries={groupedEntries} year={year} />
       <VacationsDayList
         vacationEntries={groupedEntries}
         title="Used vacation days"
@@ -179,7 +173,6 @@ const VacationsDayList = ({
         date: entry.spent_date,
         notes: entry.notes,
       }))}
-      style={{ paddingLeft: 25 }}
       renderItem={(item) => (
         <List.Item style={{ padding: "2px 10px" }}>
           {item.date} {item.notes ? ` - ${item.notes}` : ""}

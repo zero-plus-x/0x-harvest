@@ -1,4 +1,5 @@
-import { Button, Col, PageHeader, Row, Space } from "antd";
+import { Button, Col, Row, Space, Typography } from "antd";
+import { PageHeader } from "@ant-design/pro-layout";
 import classnames from "classnames";
 import moment from "moment";
 import type { GetServerSideProps, NextPage } from "next";
@@ -77,63 +78,56 @@ const TimeEntries = () => {
 
   return (
     <>
-      <PageHeader
-        title={<span style={{ fontSize: 19 }}>{formattedDate}</span>}
-        breadcrumbRender={() => (
-          <MonthNavigation
-            currentMonth={currentMonth}
-            currentYear={currentYear}
-            changeDate={(year, month) => {
-              setCurrentYear(year);
-              setCurrentMonth(month);
-            }}
-          />
-        )}
-        subTitle={
-          (moment().year() !== currentYear ||
-            moment().month() !== currentMonth) && (
-            <Button
-              type="link"
-              onClick={() => {
-                setCurrentYear(moment().year());
-                setCurrentMonth(moment().month());
+      <MonthNavigation
+        currentMonth={currentMonth}
+        currentYear={currentYear}
+        changeDate={(year, month) => {
+          setCurrentYear(year);
+          setCurrentMonth(month);
+        }}
+      />
+      <Typography.Title level={4}>{formattedDate}</Typography.Title>
+      {(moment().year() !== currentYear ||
+        moment().month() !== currentMonth) && (
+        <Button
+          type="link"
+          onClick={() => {
+            setCurrentYear(moment().year());
+            setCurrentMonth(moment().month());
+          }}
+        >
+          go to current month
+        </Button>
+      )}
+      <Row>
+        <Col lg={5} sm={8} xs={12}>
+          <LoggedHoursStatistic date={currentDate} entries={entries} />
+        </Col>
+        <Col sm={12} xs={12}>
+          <TaskHoursStatistic entries={entries} />
+        </Col>
+      </Row>
+      {primaryTask && entries && emptyDays.length > 0 && (
+        <Row style={{ marginTop: 20 }}>
+          <Col xs={24}>
+            <FillMonthButton
+              loadMonth={loadMonth}
+              days={emptyDays.map((d) => d.date)}
+              onCreatedEntries={(newEntries) => {
+                setEntries((prevEntries) => {
+                  if (!prevEntries) {
+                    return prevEntries;
+                  }
+                  return [...prevEntries, newEntries]
+                    .flat()
+                    .sort((a, b) => b.spent_date.localeCompare(a.spent_date));
+                });
               }}
-            >
-              go to current month
-            </Button>
-          )
-        }
-      >
-        <Row>
-          <Col lg={5} sm={8} xs={12}>
-            <LoggedHoursStatistic date={currentDate} entries={entries} />
-          </Col>
-          <Col sm={12} xs={12}>
-            <TaskHoursStatistic entries={entries} />
+            />
           </Col>
         </Row>
-        {primaryTask && entries && emptyDays.length > 0 && (
-          <Row style={{ marginTop: 20 }}>
-            <Col xs={24}>
-              <FillMonthButton
-                loadMonth={loadMonth}
-                days={emptyDays.map((d) => d.date)}
-                onCreatedEntries={(newEntries) => {
-                  setEntries((prevEntries) => {
-                    if (!prevEntries) {
-                      return prevEntries;
-                    }
-                    return [...prevEntries, newEntries]
-                      .flat()
-                      .sort((a, b) => b.spent_date.localeCompare(a.spent_date));
-                  });
-                }}
-              />
-            </Col>
-          </Row>
-        )}
-      </PageHeader>
-      <div style={{ marginLeft: 20 }}>
+      )}
+      <div style={{ marginTop: 20 }}>
         {entries ? (
           <>
             <br />

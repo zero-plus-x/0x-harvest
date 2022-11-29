@@ -1,7 +1,7 @@
 import "../styles/globals.css";
 import Head from "next/head";
 import type { AppProps } from "next/app";
-import "antd/dist/antd.css";
+import "antd/dist/reset.css";
 import React from "react";
 import CommonLayout from "../components/layout/CommonLayout";
 import {
