@@ -11,7 +11,7 @@ export default function CommonLayout({
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Header />
-      <Layout.Content style={{ paddingTop: 15 }}>
+      <Layout.Content>
         <Row>
           <Col xxl={5} xl={4} lg={2} md={2} sm={1} xs={0}></Col>
           <Col
@@ -21,7 +21,7 @@ export default function CommonLayout({
             md={20}
             sm={22}
             xs={24}
-            style={{ paddingTop: 20, paddingBottom: 50 }}
+            style={{ paddingTop: 30, paddingBottom: 50, paddingLeft: 20 }}
           >
             {children}
           </Col>
