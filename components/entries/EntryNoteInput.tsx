@@ -19,10 +19,16 @@ export const EntryNoteInput = ({
 
   if (entry.is_locked) {
     return (
-      <>
+      <div
+        style={{
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+        }}
+      >
         Entry is locked in Harvest{" "}
         <span className="hide-below-md">({entry.locked_reason})</span>
-      </>
+      </div>
     );
   }
   return (

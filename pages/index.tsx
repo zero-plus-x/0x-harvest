@@ -238,7 +238,7 @@ const TimeEntryRow = ({
       <Col xl={4} md={5} sm={4} xs={6}>
         {entry && <TaskNameWithTooltip entry={entry} />}
       </Col>
-      <Col xl={9} lg={7} xs={9} style={{ textAlign: "center" }}>
+      <Col xl={9} lg={7} sm={6} xs={9} style={{ textAlign: "center" }}>
         {day.isBusinessDay ? (
           entry ? (
             <EntryNoteInput
