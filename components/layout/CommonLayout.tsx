@@ -29,7 +29,7 @@ export default function CommonLayout({
         </Row>
       </Layout.Content>
       <Layout.Footer style={{ textAlign: "center" }}>
-        Feature requests and bug reports welcome at GitHub{" "}
+        Feature requests and bug reports welcome on GitHub{" "}
         <a
           href="https://github.com/jakubkottnauer/0x-harvest"
           target="_blank"
