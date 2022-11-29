@@ -18,7 +18,12 @@ export const EntryNoteInput = ({
   const [loading, setLoading] = useState(false);
 
   if (entry.is_locked) {
-    return <>Entry is locked in Harvest ({entry.locked_reason})</>;
+    return (
+      <>
+        Entry is locked in Harvest{" "}
+        <span className="hide-below-md">({entry.locked_reason})</span>
+      </>
+    );
   }
   return (
     <Input
