@@ -10,7 +10,7 @@ export default function CommonLayout({
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Header />
-      <Layout.Content>
+      <Layout.Content style={{ paddingTop: 15 }}>
         <Row>
           <Col xxl={5} xl={4} lg={2} md={2} sm={1} xs={0}></Col>
           <Col
