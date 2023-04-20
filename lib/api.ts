@@ -2,7 +2,7 @@ import axios from "axios";
 import moment from "moment";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
-import { ProjectAssignment, TimeEntry, User } from "../types";
+import { AccessRole, ProjectAssignment, TimeEntry, User } from "../types";
 
 const HARVEST_API_URL = "/api/harvest";
 
@@ -178,9 +178,13 @@ export const useUser = () => {
       },
     }
   );
+
   return {
     data,
     isLoading: !error && !data,
     isError: error,
   };
 };
+
+export const isUserInRole = (user: User, roles: AccessRole[]) =>
+  user.access_roles.filter((value) => roles.includes(value as any)).length;

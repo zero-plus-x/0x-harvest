@@ -20,12 +20,19 @@ export type Task = {
   is_active: boolean;
 };
 
+export enum AccessRole {
+  MEMBER = "member",
+  ADMIN = "admin",
+  MANAGER = "manager",
+}
+
 export type User = {
   id: string;
   first_name: string;
   last_name: string;
   email: string;
   avatar_url: string;
+  access_roles: `${AccessRole}`[];
 };
 
 export type Account = {
