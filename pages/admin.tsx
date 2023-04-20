@@ -88,7 +88,7 @@ const AllUsersTaskEntry = () => {
           <p>
             Note that we currently do not check for existing time entries, so
             running this multiple times will create duplicate entries in
-            people's time sheets.
+            people&apos;s time sheets.
           </p>
           <Button
             disabled={loading}
