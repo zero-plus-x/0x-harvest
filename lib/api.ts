@@ -16,12 +16,18 @@ type SpecialTask = {
 export const PAID_VACATION_TASK_ID = 6646907;
 export const VACATION_TASK_ID = 2595366;
 export const UNPAID_VACATION_TASK_ID = 6646908;
+export const PUBLIC_HOLIDAY_TASK_ID = 8114249;
 export const FALLBACK_HOURS = 8;
 export const HARVEST_DATE_FORMAT = "YYYY-MM-DD";
 
+export enum Project {
+  ABSENCE = 11820549,
+  INTERNAL = 9788476,
+}
+
 export const projects: Record<number, string> = {
-  11820549: "Absence",
-  9788476: "Internal",
+  [Project.ABSENCE]: "Absence",
+  [Project.INTERNAL]: "Internal",
 };
 
 export const specialTasks: { [taskId: number]: SpecialTask } = {
@@ -33,7 +39,7 @@ export const specialTasks: { [taskId: number]: SpecialTask } = {
     // "Vacation"
     emoji: "🏖️",
   },
-  8114249: {
+  [PUBLIC_HOLIDAY_TASK_ID]: {
     // "Public holiday"
     emoji: "🎅",
   },
@@ -148,13 +154,17 @@ export const createTimeEntry = (
   spentDate: string,
   projectId: number,
   taskId: number,
-  hours: number = FALLBACK_HOURS
+  hours: number = FALLBACK_HOURS,
+  notes?: string,
+  userId?: number
 ) => {
   return axios.post<TimeEntry>(`${HARVEST_API_URL}/time_entries`, {
     project_id: projectId,
     task_id: taskId,
     hours,
     spent_date: spentDate,
+    user_id: userId,
+    notes,
   });
 };
 
@@ -173,6 +183,28 @@ export const useUser = () => {
     {
       onErrorRetry: (error) => {
         if (error.status === 401) {
+          return;
+        }
+      },
+    }
+  );
+
+  return {
+    data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};
+
+type MessageResponse = { message: string };
+
+export const useAllUsers = () => {
+  const { data, error } = useSWRImmutable<{ users: User[] }>(
+    `${HARVEST_API_URL}/users`,
+    (resource, init) => fetch(resource, init).then((res) => res.json()),
+    {
+      onErrorRetry: (error) => {
+        if (error.status === 403) {
           return;
         }
       },
