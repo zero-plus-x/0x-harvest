@@ -22,7 +22,7 @@ export type Task = {
 
 export enum AccessRole {
   MEMBER = "member",
-  ADMIN = "admin",
+  ADMIN = "administrator",
   MANAGER = "manager",
 }
 
