@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, Col, Row, Skeleton, Spin } from "antd";
+import { Button, Card, Col, Row, Select, Skeleton, Spin } from "antd";
 import type { GetServerSideProps, NextPage } from "next";
 import {
   createTimeEntry,
@@ -12,7 +12,7 @@ import {
 } from "../lib/api";
 import { cachePage } from "../lib/caching";
 import { useRouter } from "next/router";
-import { AccessRole } from "../types";
+import { AccessRole, User } from "../types";
 import { delay, partitionArray } from "../lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
@@ -47,6 +47,7 @@ const Admin: NextPage = () => {
   );
 };
 
+// TODO: make this configurable in the UI and fetch the list from somewhere
 const redDays: { date: string; note: string }[] = [
   { date: "2023-05-01", note: "Första maj" },
   { date: "2023-05-18", note: "Kristi himmelsfärds dag" },
@@ -56,27 +57,40 @@ const redDays: { date: string; note: string }[] = [
   { date: "2023-12-26", note: "Annandag jul" },
 ];
 
-const SLEEP_BATCH_SECONDS = 10;
+const SLEEP_BATCH_SECONDS = 15;
+
+const ALL_USERS_FAKE_ID = -1;
 
 const AllUsersTaskEntry = () => {
   const { data: users, isLoading } = useAllUsers();
   const [loading, setLoading] = useState(false);
   const [totalProcessed, setTotalProcessed] = useState(0);
-
+  const [selectedUsers, setSelectedUsers] = React.useState<number[]>([]);
   if (isLoading) {
     return <Skeleton />;
   }
 
   const userList = users?.users || [];
   const activeUsers = userList.filter((user) => user.is_active);
+  const haveProcessedAll = totalProcessed === activeUsers.length;
+
+  const usersToBeProcessed =
+    selectedUsers[0] === ALL_USERS_FAKE_ID
+      ? activeUsers.map((u) => u.id)
+      : selectedUsers;
   return (
     <Card>
       <Card.Meta title="Add red days to users" />
-      {activeUsers.length === 0 ? (
+      <UserSelect
+        selectedUsers={selectedUsers}
+        setSelectedUsers={setSelectedUsers}
+        allUsers={activeUsers}
+      />
+      {activeUsers.length > 0 ? (
         <>
           <p>
             Clicking the button below will create new time entries for{" "}
-            {activeUsers.length} active users on the following dates:
+            {usersToBeProcessed.length} active users on the following dates:
           </p>
           <ul>
             {redDays.map((day) => (
@@ -87,20 +101,21 @@ const AllUsersTaskEntry = () => {
           </ul>
           <p>
             Note that we currently do not check for existing time entries, so
-            running this multiple times will create duplicate entries in
-            people&apos;s time sheets.
+            running this multiple times for one user will create duplicate
+            entries in their time sheet.
           </p>
           <Button
-            disabled={loading}
+            disabled={loading || !usersToBeProcessed.length}
             loading={loading}
             type="primary"
             onClick={async () => {
+              setTotalProcessed(0);
               setLoading(true);
               // send requests in batches due to harvest api rate limiting
-              const batches = partitionArray(activeUsers, 10);
+              const batches = partitionArray(usersToBeProcessed, 10);
 
               for (const [batchIndex, batch] of batches.entries()) {
-                const promises = batch.flatMap((user) =>
+                const promises = batch.flatMap((userId) =>
                   redDays.map((day) =>
                     createTimeEntry(
                       day.date,
@@ -108,7 +123,7 @@ const AllUsersTaskEntry = () => {
                       PUBLIC_HOLIDAY_TASK_ID,
                       FALLBACK_HOURS,
                       day.note,
-                      user.id
+                      userId
                     )
                   )
                 );
@@ -123,7 +138,7 @@ const AllUsersTaskEntry = () => {
           >
             Create time entries
           </Button>
-          {loading && (
+          {loading && !haveProcessedAll && (
             <span>
               {" "}
               Processed {totalProcessed}/{activeUsers.length} users... <Spin />
@@ -133,11 +148,51 @@ const AllUsersTaskEntry = () => {
               limiting in Harvest API.
             </span>
           )}
+          {!loading && haveProcessedAll && <span> Done!</span>}
         </>
       ) : (
         <>No users have been fetched, you probably lack permissions.</>
       )}
     </Card>
+  );
+};
+
+const UserSelect = ({
+  selectedUsers,
+  setSelectedUsers,
+  allUsers,
+}: {
+  selectedUsers: number[];
+  setSelectedUsers: (ids: number[]) => void;
+  allUsers: User[];
+}) => {
+  return (
+    <Select
+      mode="multiple"
+      allowClear
+      style={{ width: "100%" }}
+      placeholder="Select users..."
+      value={selectedUsers}
+      onChange={(value: number[]) => {
+        let newValue =
+          selectedUsers.includes(ALL_USERS_FAKE_ID) && value.length === 2
+            ? value.filter((v) => v !== ALL_USERS_FAKE_ID)
+            : value;
+
+        newValue = newValue.includes(ALL_USERS_FAKE_ID)
+          ? [ALL_USERS_FAKE_ID]
+          : newValue;
+
+        setSelectedUsers(newValue);
+      }}
+      options={[
+        { label: `All ${allUsers.length} users`, value: ALL_USERS_FAKE_ID },
+        ...allUsers.map((user) => ({
+          label: `${user.first_name} ${user.last_name}`,
+          value: user.id,
+        })),
+      ]}
+    />
   );
 };
 

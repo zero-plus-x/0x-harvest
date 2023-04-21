@@ -196,8 +196,6 @@ export const useUser = () => {
   };
 };
 
-type MessageResponse = { message: string };
-
 export const useAllUsers = () => {
   const { data, error } = useSWRImmutable<{ users: User[] }>(
     `${HARVEST_API_URL}/users`,
@@ -210,6 +208,23 @@ export const useAllUsers = () => {
       },
     }
   );
+
+  // const userMock = [
+  //   {
+  //     first_name: "Jakub",
+  //     last_name: "Kottnauer",
+  //     id: 2947353,
+  //     is_active: true,
+  //   },
+  //   {
+  //     first_name: "Sergey",
+  //     last_name: "Bogdanov",
+  //     id: 12232,
+  //     is_active: true,
+  //   },
+  //   { first_name: "Daria", last_name: "Kolesnik", id: 123, is_active: true },
+  //   { first_name: "old", last_name: "old", id: 12323, is_active: false },
+  // ];
 
   return {
     data,
