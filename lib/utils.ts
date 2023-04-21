@@ -28,5 +28,5 @@ export const useRedirectIfNotInRole = (
         pathname: redirectTo,
       });
     }
-  }, [user, router]);
+  }, [user, router, requiredRoles, redirectTo]);
 };
