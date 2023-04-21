@@ -199,12 +199,19 @@ const UserSelect = ({
 
         setSelectedUsers(newValue);
       }}
+      filterOption={(inputValue, option) =>
+        !!option?.label
+          .toLocaleLowerCase()
+          .includes(inputValue.toLocaleLowerCase())
+      }
       options={[
         { label: `All ${allUsers.length} users`, value: ALL_USERS_FAKE_ID },
-        ...allUsers.map((user) => ({
-          label: `${user.first_name} ${user.last_name}`,
-          value: user.id,
-        })),
+        ...allUsers
+          .map((user) => ({
+            label: `${user.first_name} ${user.last_name}`,
+            value: user.id,
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label)),
       ]}
     />
   );
