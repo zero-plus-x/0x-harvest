@@ -14,6 +14,7 @@ import { cachePage } from "../lib/caching";
 import { useRouter } from "next/router";
 import { AccessRole, User } from "../types";
 import { delay, partitionArray } from "../lib/utils";
+import { CheckCircleTwoTone } from "@ant-design/icons";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   cachePage(res);
@@ -72,12 +73,15 @@ const AllUsersTaskEntry = () => {
 
   const userList = users?.users || [];
   const activeUsers = userList.filter((user) => user.is_active);
-  const haveProcessedAll = totalProcessed === activeUsers.length;
 
   const usersToBeProcessed =
     selectedUsers[0] === ALL_USERS_FAKE_ID
       ? activeUsers.map((u) => u.id)
       : selectedUsers;
+
+  const haveProcessedAll =
+    usersToBeProcessed.length > 0 &&
+    totalProcessed === usersToBeProcessed.length;
   return (
     <Card>
       <Card.Meta title="Add red days to users" />
@@ -88,9 +92,14 @@ const AllUsersTaskEntry = () => {
       />
       {activeUsers.length > 0 ? (
         <>
-          <p>
-            Clicking the button below will create new time entries for{" "}
-            {usersToBeProcessed.length} active users on the following dates:
+          <p style={{ marginTop: 10 }}>
+            {usersToBeProcessed.length === 0
+              ? "Please select some users in the dropdown in order to create time entries "
+              : `Clicking the button below will create new time entries for
+            ${usersToBeProcessed.length} user${
+                  usersToBeProcessed.length > 1 ? "s" : ""
+                } `}
+            on the following dates:
           </p>
           <ul>
             {redDays.map((day) => (
@@ -148,7 +157,12 @@ const AllUsersTaskEntry = () => {
               limiting in Harvest API.
             </span>
           )}
-          {!loading && haveProcessedAll && <span> Done!</span>}
+          {!loading && haveProcessedAll && (
+            <span>
+              {" "}
+              Done <CheckCircleTwoTone twoToneColor="#52c41a" />
+            </span>
+          )}
         </>
       ) : (
         <>No users have been fetched, you probably lack permissions.</>
@@ -170,7 +184,7 @@ const UserSelect = ({
     <Select
       mode="multiple"
       allowClear
-      style={{ width: "100%" }}
+      style={{ width: "100%", marginTop: 10 }}
       placeholder="Select users..."
       value={selectedUsers}
       onChange={(value: number[]) => {
