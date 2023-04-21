@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 import { HARVEST_API_BASE_URL } from "../../../lib/harvestConfig";
 import { cacheApiResponse } from "../../../lib/caching";
 import { FAKE_HARVEST_TOKEN } from "../../../lib/testUtils";
+import { User } from "../../../types";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   return new Promise(async () => {
@@ -34,7 +35,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const data = await resp.json();
 
         if (req.url === "/users/me" && data) {
-          Sentry.captureMessage(`Loaded page`, { user: { email: data.email } });
+          const user = data as User;
+          Sentry.captureMessage(`Loaded page`, {
+            user: {
+              email: user.email,
+              id: user.id.toString(),
+            },
+            extra: {
+              accessRoles: user.access_roles.join(", "),
+            },
+          });
         } else if (req.url === "/users/me/project_assignments") {
           cacheApiResponse(res);
         }
