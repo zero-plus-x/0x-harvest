@@ -17,8 +17,10 @@ import TaskHoursStatistic from "../components/entries/TaskHoursStatistic";
 import TaskNameWithTooltip from "../components/entries/TaskNameWithTooltip";
 import { HARVEST_DATE_FORMAT, useTimeEntries } from "../lib/api";
 import { cachePage } from "../lib/caching";
-import { TimeEntry } from "../types";
+import { AccessRole, TimeEntry } from "../types";
 import { Day, getDaysInMonthRange, usePrimaryTask } from "../utils";
+import { useRedirectIfNotInRole } from "../lib/utils";
+import { Route } from "../lib/routes";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   cachePage(res);
@@ -28,6 +30,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 };
 
 const Home: NextPage = () => {
+  useRedirectIfNotInRole(Route.ADMIN, [AccessRole.MEMBER]);
   return <TimeEntries />;
 };
 

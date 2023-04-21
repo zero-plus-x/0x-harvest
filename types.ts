@@ -26,6 +26,8 @@ export enum AccessRole {
   MANAGER = "manager",
 }
 
+export const AdminRoles: AccessRole[] = [AccessRole.MANAGER, AccessRole.ADMIN];
+
 export type User = {
   id: number;
   first_name: string;

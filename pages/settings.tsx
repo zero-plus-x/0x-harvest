@@ -12,6 +12,9 @@ import { specialTasks, useProjectAssignments } from "../lib/api";
 import { observer } from "mobx-react-lite";
 import { useUserSettingState } from "../stores/UserSettingsStore";
 import { cachePage } from "../lib/caching";
+import { useRedirectIfNotInRole } from "../lib/utils";
+import { Route } from "../lib/routes";
+import { AccessRole } from "../types";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   cachePage(res);
@@ -21,6 +24,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 };
 
 const Settings: NextPage = () => {
+  useRedirectIfNotInRole(Route.ADMIN, [AccessRole.MEMBER]);
   return (
     <Row gutter={20}>
       <Col md={12} xs={24}>

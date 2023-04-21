@@ -6,6 +6,7 @@ import { isUserInRole, logout, useUser } from "../../lib/api";
 import { useRouter } from "next/dist/client/router";
 import { AccessRole } from "../../types";
 import { ItemType } from "antd/es/menu/hooks/useItems";
+import { Route } from "../../lib/routes";
 
 const LoginButton = () => {
   const router = useRouter();
@@ -35,12 +36,24 @@ const LoginButton = () => {
 const pages: (ItemType & {
   requiredRoles?: AccessRole[];
 })[] = [
-  { key: "home", label: <Link href="/">Hours</Link> },
-  { key: "vacation", label: <Link href="/vacation">Vacation</Link> },
-  { key: "settings", label: <Link href="/settings">Settings</Link> },
+  {
+    key: "home",
+    label: <Link href={Route.HOME}>Hours</Link>,
+    requiredRoles: [AccessRole.MEMBER],
+  },
+  {
+    key: "vacation",
+    label: <Link href={Route.VACATION}>Vacation</Link>,
+    requiredRoles: [AccessRole.MEMBER],
+  },
+  {
+    key: "settings",
+    label: <Link href={Route.SETTINGS}>Settings</Link>,
+    requiredRoles: [AccessRole.MEMBER],
+  },
   {
     key: "admin",
-    label: <Link href="/admin">Admin</Link>,
+    label: <Link href={Route.ADMIN}>Admin</Link>,
     requiredRoles: [AccessRole.ADMIN, AccessRole.MANAGER],
   },
   { key: "login", label: <LoginButton /> },

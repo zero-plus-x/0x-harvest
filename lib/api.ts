@@ -129,7 +129,6 @@ export const useProjectAssignments = () => {
         .then((res) => res.json())
         .then((res) => res.project_assignments)
   );
-
   return {
     cacheKey,
     data,

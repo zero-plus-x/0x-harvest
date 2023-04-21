@@ -12,9 +12,10 @@ import {
 } from "../lib/api";
 import { cachePage } from "../lib/caching";
 import { useRouter } from "next/router";
-import { AccessRole, User } from "../types";
-import { delay, partitionArray } from "../lib/utils";
+import { AccessRole, AdminRoles, User } from "../types";
+import { delay, partitionArray, useRedirectIfNotInRole } from "../lib/utils";
 import { CheckCircleTwoTone } from "@ant-design/icons";
+import { Route } from "../lib/routes";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   cachePage(res);
@@ -24,16 +25,8 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 };
 
 const Admin: NextPage = () => {
-  const router = useRouter();
   const { data: user } = useUser();
-
-  React.useEffect(() => {
-    if (user && !isUserInRole(user, [AccessRole.ADMIN, AccessRole.MANAGER])) {
-      router.push({
-        pathname: "/",
-      });
-    }
-  }, [user, router]);
+  useRedirectIfNotInRole(Route.HOME, AdminRoles);
 
   if (!user) {
     return <Skeleton />;

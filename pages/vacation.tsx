@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Alert, Button, Col, List, Row, Statistic, Typography } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { TimeEntry } from "../types";
+import { AccessRole, TimeEntry } from "../types";
 import {
   PAID_VACATION_TASK_ID,
   UNPAID_VACATION_TASK_ID,
@@ -14,6 +14,8 @@ import {
 import { useRouter } from "next/dist/client/router";
 import { DEFAULT_VACATION_ALLOWANCE, getVacationAllowance } from "../utils";
 import { cachePage } from "../lib/caching";
+import { useRedirectIfNotInRole } from "../lib/utils";
+import { Route } from "../lib/routes";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   cachePage(res);
@@ -25,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 const Vacation: NextPage = () => {
   const router = useRouter();
   let year = moment().year();
+  useRedirectIfNotInRole(Route.ADMIN, [AccessRole.MEMBER]);
 
   if (typeof router.query.year === "string") {
     const parsed = parseInt(router.query.year);
@@ -130,21 +133,22 @@ const VacationsDaysLeft = ({
 
   return (
     <>
-      {!Object.keys(vacationAllowance).length && typeof window !== "undefined" && (
-        <Row>
-          <Col>
-            <Alert
-              type="info"
-              message={
-                <>
-                  You can set your vacation allowance per year in{" "}
-                  <Link href="/settings">Settings</Link>
-                </>
-              }
-            />
-          </Col>
-        </Row>
-      )}
+      {!Object.keys(vacationAllowance).length &&
+        typeof window !== "undefined" && (
+          <Row>
+            <Col>
+              <Alert
+                type="info"
+                message={
+                  <>
+                    You can set your vacation allowance per year in{" "}
+                    <Link href="/settings">Settings</Link>
+                  </>
+                }
+              />
+            </Col>
+          </Row>
+        )}
       <Row>
         <Col>
           <Statistic
