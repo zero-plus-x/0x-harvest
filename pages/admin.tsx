@@ -4,18 +4,18 @@ import type { GetServerSideProps, NextPage } from "next";
 import {
   createTimeEntry,
   FALLBACK_HOURS,
-  isUserInRole,
   Project,
   PUBLIC_HOLIDAY_TASK_ID,
   useAllUsers,
   useUser,
 } from "../lib/api";
 import { cachePage } from "../lib/caching";
-import { useRouter } from "next/router";
-import { AccessRole, AdminRoles, User } from "../types";
+import { AdminRoles, User } from "../types";
 import { delay, partitionArray, useRedirectIfNotInRole } from "../lib/utils";
 import { CheckCircleTwoTone } from "@ant-design/icons";
 import { Route } from "../lib/routes";
+import { redDays } from "../lib/redDays";
+import dayjs from "dayjs";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   cachePage(res);
@@ -41,18 +41,7 @@ const Admin: NextPage = () => {
   );
 };
 
-// TODO: make this configurable in the UI and fetch the list from somewhere
-const redDays: { date: string; note: string }[] = [
-  { date: "2023-05-01", note: "Första maj" },
-  { date: "2023-05-18", note: "Kristi himmelsfärds dag" },
-  { date: "2023-06-06", note: "Sveriges nationaldag" },
-  { date: "2023-06-23", note: "Midsommarafton" },
-  { date: "2023-12-25", note: "Juldagen" },
-  { date: "2023-12-26", note: "Annandag jul" },
-];
-
 const SLEEP_BATCH_SECONDS = 15;
-
 const ALL_USERS_FAKE_ID = -1;
 
 const AllUsersTaskEntry = () => {
@@ -60,6 +49,9 @@ const AllUsersTaskEntry = () => {
   const [loading, setLoading] = useState(false);
   const [totalProcessed, setTotalProcessed] = useState(0);
   const [selectedUsers, setSelectedUsers] = React.useState<number[]>([]);
+  const currentYear = dayjs().year();
+  const [year, setYear] = React.useState(currentYear.toString());
+
   if (isLoading) {
     return <Skeleton />;
   }
@@ -94,8 +86,15 @@ const AllUsersTaskEntry = () => {
                 } `}
             on the following dates:
           </p>
+          <Select
+            value={year}
+            onChange={(e) => setYear(e)}
+            options={[...Array(8).keys()].map((idx) => ({
+              value: (2023 + idx).toString(),
+            }))}
+          />
           <ul>
-            {redDays.map((day) => (
+            {redDays[year].map((day) => (
               <li key={day.date}>
                 {day.date} - {day.note}
               </li>
@@ -114,11 +113,11 @@ const AllUsersTaskEntry = () => {
               setTotalProcessed(0);
               setLoading(true);
               // send requests in batches due to harvest api rate limiting
-              const batches = partitionArray(usersToBeProcessed, 10);
+              const batches = partitionArray(usersToBeProcessed, 5);
 
               for (const [batchIndex, batch] of batches.entries()) {
                 const promises = batch.flatMap((userId) =>
-                  redDays.map((day) =>
+                  redDays[year].map((day) => {
                     createTimeEntry(
                       day.date,
                       Project.ABSENCE,
@@ -126,8 +125,8 @@ const AllUsersTaskEntry = () => {
                       FALLBACK_HOURS,
                       day.note,
                       userId
-                    )
-                  )
+                    );
+                  })
                 );
                 await Promise.all(promises);
                 setTotalProcessed((p) => p + batch.length);
