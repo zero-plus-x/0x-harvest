@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Col, Layout, Row } from "antd";
 import { GithubOutlined } from "@ant-design/icons";

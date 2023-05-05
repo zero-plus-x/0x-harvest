@@ -3,27 +3,24 @@ import Head from "next/head";
 import type { AppProps } from "next/app";
 import "antd/dist/reset.css";
 import React from "react";
+import { usePathname, useRouter } from "next/navigation";
 import CommonLayout from "../components/layout/CommonLayout";
 import {
   UserSettingsStore,
   UserSettingsStoreContext,
 } from "../stores/UserSettingsStore";
 import { useUser } from "../lib/api";
-import { useRouter } from "next/router";
 
 const publicPaths = ["/login", "/not-us"];
 
 function App({ Component, pageProps }: AppProps) {
   const { isError } = useUser();
   const router = useRouter();
-
+  const pathname = usePathname();
   React.useEffect(() => {
     if (isError) {
-      const path = router.asPath.split("?")[0];
-      if (!publicPaths.includes(path)) {
-        router.push({
-          pathname: "/login",
-        });
+      if (pathname && !publicPaths.includes(pathname)) {
+        router.push("/login");
       }
     }
   }, [isError, router]);

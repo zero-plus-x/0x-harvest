@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { isUserInRole, useUser } from "./api";
 import React from "react";
 import { AccessRole } from "../types";
@@ -24,9 +24,7 @@ export const useRedirectIfNotInRole = (
 
   React.useEffect(() => {
     if (user && !isUserInRole(user, requiredRoles)) {
-      router.push({
-        pathname: redirectTo,
-      });
+      router.push(redirectTo);
     }
   }, [user, router, requiredRoles, redirectTo]);
 };

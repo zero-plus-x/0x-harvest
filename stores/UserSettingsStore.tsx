@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext } from "react";
 import { computed, makeObservable, observable } from "mobx";
 import { TaskWithProject } from "../types";
@@ -45,4 +47,16 @@ export const useUserSettingState = () => {
     throw new Error("User setting state not initialized");
   }
   return state;
+};
+
+export const UserSettingsStoreContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  return (
+    <UserSettingsStoreContext.Provider value={new UserSettingsStore()}>
+      {children}
+    </UserSettingsStoreContext.Provider>
+  );
 };

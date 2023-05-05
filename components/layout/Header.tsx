@@ -3,16 +3,15 @@ import { Avatar, Layout, Menu } from "antd";
 import Link from "next/link";
 import Image from "next/image";
 import { isUserInRole, logout, useUser } from "../../lib/api";
-import { useRouter } from "next/dist/client/router";
+import { ItemType } from "antd/lib/menu/hooks/useItems";
+import { usePathname } from "next/navigation";
 import { AccessRole } from "../../types";
-import { ItemType } from "antd/es/menu/hooks/useItems";
 import { Route } from "../../lib/routes";
 
 const LoginButton = () => {
-  const router = useRouter();
   const { data, isLoading } = useUser();
-
-  if (router.pathname.startsWith("/login")) {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/login")) {
     return <Link href="/login">Log In</Link>;
   }
 
@@ -37,6 +36,13 @@ const pages: (ItemType & {
   requiredRoles?: AccessRole[];
 })[] = [
   {
+    key: "default",
+    label: (
+      <Image priority src="/0x_logo.svg" height={30} width={30} alt="Logo" />
+    ),
+    requiredRoles: [AccessRole.MEMBER],
+  },
+  {
     key: "home",
     label: <Link href={Route.HOME}>Hours</Link>,
     requiredRoles: [AccessRole.MEMBER],
@@ -60,7 +66,7 @@ const pages: (ItemType & {
 ];
 
 export default function Header() {
-  const router = useRouter();
+  const pathname = usePathname();
   const { data: user, isLoading } = useUser();
   const filteredPages = pages.filter(
     (p) =>
@@ -70,13 +76,10 @@ export default function Header() {
 
   return (
     <Layout.Header className="header">
-      <div className="logo">
-        <Image src="/0x_logo.svg" height={30} width={30} alt="Logo" />
-      </div>
       <Menu
         mode="horizontal"
         theme="dark"
-        selectedKeys={[router.pathname.split("/")[1] || "home"]}
+        selectedKeys={[pathname?.split("/")[1] || "home"]}
         items={filteredPages}
       />
     </Layout.Header>
