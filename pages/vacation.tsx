@@ -133,22 +133,21 @@ const VacationsDaysLeft = ({
 
   return (
     <>
-      {!Object.keys(vacationAllowance).length &&
-        typeof window !== "undefined" && (
-          <Row>
-            <Col>
-              <Alert
-                type="info"
-                message={
-                  <>
-                    You can set your vacation allowance per year in{" "}
-                    <Link href="/settings">Settings</Link>
-                  </>
-                }
-              />
-            </Col>
-          </Row>
-        )}
+      {!Object.keys(vacationAllowance).length && (
+        <Row>
+          <Col>
+            <Alert
+              type="info"
+              message={
+                <>
+                  You can set your vacation allowance per year in{" "}
+                  <Link href="/settings">Settings</Link>
+                </>
+              }
+            />
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col>
           <Statistic
