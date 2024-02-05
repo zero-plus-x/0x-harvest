@@ -5,6 +5,16 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const moduleExports = {
   reactStrictMode: true,
   swcMinify: true,
+  transpilePackages: [
+    "antd",
+    "rc-util",
+    "@ant-design/icons",
+    "@ant-design/icons-svg",
+    "rc-pagination",
+    "rc-picker",
+    "rc-tree",
+    "rc-table",
+  ],
 };
 
 const sentryWebpackPluginOptions = {
