@@ -8,9 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Enable Corepack
+        run: corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'yarn'
 
       # https://dev.to/mattpocock/how-to-cache-nodemodules-in-github-actions-with-yarn-24eh
       - name: Cache node_modules
@@ -28,7 +31,7 @@ jobs:
       #       ~/.cache/ms-playwright
       #     key: cache-playwright-linux-1.27.1
 
-      - run: yarn --frozen-lockfile
+      - run: yarn --immutable
 
 #      - name: Install Playwright
 #        if: steps.playwright-cache.outputs.cache-hit != 'true'
