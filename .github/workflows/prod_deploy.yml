@@ -7,20 +7,20 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # https://dev.to/mattpocock/how-to-cache-nodemodules-in-github-actions-with-yarn-24eh
       - name: Cache node_modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       # - name: Cache playwright binaries
-      #   uses: actions/cache@v3
+      #   uses: actions/cache@v4
       #   id: playwright-cache
       #   with:
       #     # keep the version in key in sync with package.json
@@ -46,10 +46,10 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: test
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: "Deploy to Vercel"
         run: |
