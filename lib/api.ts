@@ -105,8 +105,8 @@ export const useTimeEntries = (
   if (taskId) {
     cacheKey += `&task_id=${taskId}`;
   }
-  const { data, error } = useSWR<TimeEntry[]>(cacheKey, (resource, init) =>
-    fetch(resource, init)
+  const { data, error } = useSWR<TimeEntry[]>(cacheKey, (url: string) =>
+    fetch(url)
       .then((res) => res.json())
       .then((res) => res.time_entries)
   );
@@ -124,8 +124,8 @@ export const useProjectAssignments = () => {
 
   const { data, error } = useSWRImmutable<ProjectAssignment[]>(
     cacheKey,
-    (resource, init) =>
-      fetch(resource, init)
+    (url: string) =>
+      fetch(url)
         .then((res) => res.json())
         .then((res) => res.project_assignments)
   );
