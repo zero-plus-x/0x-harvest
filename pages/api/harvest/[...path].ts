@@ -18,6 +18,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     if (cookies.HARVEST_ACCESS_TOKEN && cookies.HARVEST_ACCOUNT_ID) {
+      console.log("got cookies");
       const resp = await fetch(`${HARVEST_API_BASE_URL}/${req.url}`, {
         method: req.method,
         headers: {
@@ -31,10 +32,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           : JSON.stringify(req.body),
       });
 
+      console.log("got response");
       if (resp.headers.get("content-type")?.startsWith("application/json")) {
+        console.log("parsing data");
         const data = await resp.json();
-
+        console.log("parsed data data");
         if (req.url === "/users/me" && data) {
+          console.log("got data!");
           const user = data as User;
           Sentry.captureMessage(`Loaded page`, {
             user: {
