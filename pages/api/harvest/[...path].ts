@@ -65,7 +65,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
 }
 
-export default Sentry.withSentry(handler);
+export default handler;
 
 const handleMockRequest = (req: NextApiRequest, res: NextApiResponse) => {
   let data = {};

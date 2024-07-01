@@ -1,9 +1,9 @@
 import React from "react";
 import { Avatar, Layout, Menu } from "antd";
+import { ItemType } from "antd/lib/menu/interface";
 import Link from "next/link";
 import Image from "next/image";
 import { isUserInRole, logout, useUser } from "../../lib/api";
-import { ItemType } from "antd/lib/menu/hooks/useItems";
 import { usePathname } from "next/navigation";
 import { AccessRole } from "../../types";
 import { Route } from "../../lib/routes";
