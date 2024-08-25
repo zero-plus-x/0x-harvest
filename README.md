@@ -11,3 +11,6 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the app.
+
+## Deployment
+The app is available at https://0x-harvest.vercel.app/, deployed to [Vercel](https://vercel.com/).
